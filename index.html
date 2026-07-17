@@ -242,6 +242,73 @@
 
   footer{text-align:center;margin-top:44px;font-size:.78rem;color:var(--humo);letter-spacing:.08em}
   @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+  /* ---------- GRUPO OFICIAL DE WHATSAPP ---------- */
+  .whatsapp-info{
+    margin:28px auto 0;
+    max-width:620px;
+    padding:22px;
+    background:linear-gradient(160deg,rgba(37,211,102,.12),rgba(18,140,126,.08));
+    border:1px solid rgba(37,211,102,.65);
+    border-left:5px solid #25D366;
+    text-align:center;
+  }
+  .whatsapp-info .whatsapp-icono{
+    width:52px;
+    height:52px;
+    margin:0 auto 12px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#25D366;
+    color:#fff;
+    font-size:1.55rem;
+    font-weight:700;
+    box-shadow:0 0 0 5px rgba(37,211,102,.12);
+  }
+  .whatsapp-info h3{
+    margin:0 0 8px;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.45rem;
+    font-weight:400;
+    letter-spacing:.1em;
+    color:#66e69a;
+  }
+  #confirmacion .whatsapp-info p{
+    max-width:540px;
+    margin:0 auto 10px;
+    color:var(--crema);
+  }
+  .btn-whatsapp{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    margin-top:8px;
+    padding:14px 22px;
+    background:#25D366;
+    color:#fff;
+    border:1px solid #69e696;
+    text-decoration:none;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.08rem;
+    letter-spacing:.1em;
+    transition:transform .15s ease,filter .15s ease;
+  }
+  .btn-whatsapp:hover{
+    filter:brightness(1.08);
+    transform:translateY(-1px);
+  }
+  .btn-whatsapp:focus-visible{
+    outline:2px solid var(--dorado);
+    outline-offset:3px;
+  }
+  @media(max-width:560px){
+    .whatsapp-info{padding:18px 14px}
+    .btn-whatsapp{width:100%;font-size:.98rem}
+  }
+
 </style>
 </head>
 <body>
@@ -349,7 +416,27 @@
       <p>Registramos la inscripción del equipo en la modalidad <strong id="catConfirmada"></strong>, con <strong id="cantConfirmada"></strong>.</p>
       <p>Enviamos un correo de confirmación a <strong id="mailConfirmado"></strong>.</p>
       <p>Nos vemos el <strong>10 de octubre</strong> en las <strong>Termas del Arapey</strong>.</p>
+
       <div id="ficha"></div>
+
+      <!-- GRUPO OFICIAL DE WHATSAPP -->
+      <section class="whatsapp-info" aria-labelledby="tituloWhatsapp">
+        <div class="whatsapp-icono" aria-hidden="true">W</div>
+        <h3 id="tituloWhatsapp">PASO IMPORTANTE</h3>
+        <p>
+          Para recibir avisos, horarios e información oficial del evento,
+          deberá unirse al <strong>GRUPO DE WHATSAPP</strong>.
+        </p>
+        <a
+          class="btn-whatsapp"
+          href="https://chat.whatsapp.com/JcO1J10eNLNGRFQ5REnHHZ?s=cl&p=a&mlu=0&amv=1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          UNIRME AL GRUPO DE WHATSAPP
+        </a>
+      </section>
+
       <button type="button" class="btn-imprimir" onclick="window.print()">IMPRIMIR / GUARDAR PDF</button>
     </div>
   </main>
