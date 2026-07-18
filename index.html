@@ -450,6 +450,196 @@
     .aviso-panel{padding:20px 16px}
   }
 
+
+  /* ---------- DATOS DE PROCEDENCIA ---------- */
+  .procedencia-box{
+    margin-bottom:22px;
+    padding:18px;
+    background:rgba(212,169,78,.06);
+    border:1px solid var(--linea);
+    border-left:4px solid var(--dorado);
+  }
+  .procedencia-box .procedencia-titulo{
+    margin-bottom:14px;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.05rem;
+    letter-spacing:.1em;
+    color:var(--dorado);
+  }
+
+  /* ---------- HOSPEDAJE CON DESCRIPCIÓN ---------- */
+  .hospedaje-selector{
+    grid-template-columns:1fr 1fr;
+    max-width:none;
+  }
+  .hospedaje-selector .opcion{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:flex-start;
+    min-height:150px;
+    padding:18px;
+    text-align:left;
+    font-family:'Barlow',sans-serif;
+    letter-spacing:0;
+  }
+  .opcion-hospedaje-titulo{
+    display:block;
+    margin-bottom:9px;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.06rem;
+    line-height:1.15;
+    letter-spacing:.06em;
+    color:var(--dorado-suave);
+  }
+  .opcion-hospedaje-desc{
+    display:block;
+    font-size:.82rem;
+    font-weight:400;
+    line-height:1.48;
+    color:var(--humo);
+    text-transform:none;
+  }
+  .hospedaje-selector .opcion.activo .opcion-hospedaje-titulo{
+    color:#ffffff;
+  }
+  .hospedaje-selector .opcion.activo .opcion-hospedaje-desc{
+    color:#f7e9e9;
+  }
+
+  /* ---------- CANTIDAD AUTOMÁTICA ---------- */
+  .contador-automatico{
+    margin:8px 0 12px;
+    padding:18px;
+    text-align:center;
+    background:var(--carbon);
+    border:1px solid var(--linea);
+  }
+  .contador-automatico .valor{
+    display:inline-flex;
+    min-width:86px;
+    height:58px;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:8px;
+    background:linear-gradient(160deg,var(--rojo-osc),var(--rojo));
+    border:1px solid var(--dorado);
+    font-family:'Staatliches',sans-serif;
+    font-size:2rem;
+  }
+  .contador-automatico p{
+    color:var(--humo);
+    font-size:.82rem;
+    line-height:1.45;
+  }
+  .detalle-cantidad-modalidades{
+    margin-bottom:20px;
+    padding:11px 13px;
+    border-left:3px solid #25D366;
+    background:rgba(37,211,102,.07);
+    color:#9ce9b9;
+    font-size:.82rem;
+    line-height:1.45;
+  }
+
+  @media(max-width:650px){
+    .hospedaje-selector{grid-template-columns:1fr}
+    .hospedaje-selector .opcion{min-height:auto}
+  }
+
+
+
+  /* ---------- CATEGORÍA SEÑOR +50 ---------- */
+  .dorsal-mayor50{border-style:dashed}
+  .dorsal-mayor50:not(.activo){background:rgba(212,169,78,.05)}
+  .dorsal-mayor50 .tipo{color:var(--dorado-suave)}
+  .dorsal-mayor50.activo{
+    background:linear-gradient(160deg,#5d4617,#9b7220);
+    border-color:#f0ca6a;
+    box-shadow:0 0 0 2px rgba(240,202,106,.15);
+  }
+  .dorsal-mayor50.activo .sub{color:#fff2c8}
+
+  .selector-mayor50{
+    display:none;
+    margin-top:14px;
+    padding:16px;
+    border:1px solid rgba(240,202,106,.55);
+    border-left:4px solid #f0ca6a;
+    background:rgba(212,169,78,.07);
+  }
+  .selector-mayor50.visible{display:block;animation:aparecer .2s ease}
+  .selector-mayor50-titulo{
+    margin-bottom:10px;
+    font-family:'Staatliches',sans-serif;
+    color:var(--dorado);
+    letter-spacing:.1em;
+  }
+  .selector-mayor50-opciones{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+  .opcion-mayor50{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    margin:0;
+    padding:13px;
+    cursor:pointer;
+    border:1px solid var(--linea);
+    background:var(--carbon);
+    text-transform:none;
+    letter-spacing:0;
+  }
+  .opcion-mayor50 input{
+    width:18px;
+    height:18px;
+    margin-top:2px;
+    accent-color:#d4a94e;
+    flex:none;
+  }
+  .opcion-mayor50 strong{
+    display:block;
+    margin-bottom:4px;
+    color:var(--dorado-suave);
+    font-family:'Staatliches',sans-serif;
+    font-size:1rem;
+    letter-spacing:.06em;
+  }
+  .opcion-mayor50 small{
+    display:block;
+    color:var(--humo);
+    font-size:.76rem;
+    line-height:1.4;
+  }
+  .opcion-mayor50.activo{
+    border-color:#f0ca6a;
+    background:rgba(212,169,78,.13);
+  }
+  .comp-modalidad{
+    margin-left:auto;
+    padding:5px 8px;
+    border:1px solid var(--linea);
+    color:var(--dorado-suave);
+    font-size:.68rem;
+    line-height:1.2;
+    text-align:right;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+  .comp[data-mayor50="true"]{
+    border-color:rgba(240,202,106,.7);
+  }
+  .comp[data-mayor50="true"] .comp-num{
+    background:#f0ca6a;
+  }
+  @media(max-width:600px){
+    .selector-mayor50-opciones{grid-template-columns:1fr}
+    .comp-head{flex-wrap:wrap}
+    .comp-modalidad{width:100%;margin-left:50px;text-align:left}
+  }
+
 </style>
 </head>
 <body>
@@ -479,16 +669,55 @@
       <!-- PASO 1: MODALIDAD -->
       <section class="paso activo" data-paso="1">
         <div class="paso-titulo">Modalidad</div>
-        <p class="paso-ayuda">Seleccioná una o más modalidades en las que competirá tu equipo.</p>
+        <p class="paso-ayuda">
+          Seleccioná una o más modalidades. Al elegir <strong>Señor +50</strong>, deberá indicar
+          si participará como <strong>Individual masculino +50</strong>,
+          <strong>Individual femenino +50</strong>, <strong>Grupal masculino +50</strong>,
+          <strong>Grupal femenino +50</strong> o <strong>Grupo mixto +50</strong>.
+          Esta categoría puede combinarse con las demás sin modificar sus integrantes.
+          El sexo de cada competidor se precargará automáticamente según la modalidad seleccionada;
+          en los grupos mixtos se asignarán dos masculinos y dos femeninos.
+        </p>
         <div class="dorsales" role="group" aria-label="Modalidades de competencia">
           <label class="dorsal" data-value="INDIVIDUAL MASCULINO" aria-pressed="false"><input type="checkbox" name="categoria" value="INDIVIDUAL MASCULINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Masculino</span></label>
           <label class="dorsal" data-value="INDIVIDUAL FEMENINO" aria-pressed="false"><input type="checkbox" name="categoria" value="INDIVIDUAL FEMENINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Femenino</span></label>
           <label class="dorsal" data-value="GRUPAL MASCULINO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPAL MASCULINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Masculino</span></label>
           <label class="dorsal" data-value="GRUPAL FEMENINO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPAL FEMENINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Femenino</span></label>
           <label class="dorsal" data-value="GRUPO MIXTO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPO MIXTO"><span class="pinza"></span><span class="tipo">GRUPO</span><span class="sub">Mixto</span></label>
-          <label class="dorsal" data-value="SEÑOR +50" aria-pressed="false"><input type="checkbox" name="categoria" value="SEÑOR +50"><span class="pinza"></span><span class="tipo">SEÑOR</span><span class="sub">+50</span></label>
+          <label class="dorsal dorsal-mayor50" data-value="SEÑOR +50" aria-pressed="false">
+            <input type="checkbox" name="categoria" value="SEÑOR +50">
+            <span class="pinza"></span>
+            <span class="tipo">SEÑOR +50</span>
+            <span class="sub">Elegir individual o grupal</span>
+          </label>
         </div>
         <p id="modalidadesEstado" class="modalidades-estado" aria-live="polite">Ninguna modalidad seleccionada.</p>
+
+        <div id="selectorMayor50" class="selector-mayor50" aria-live="polite">
+          <div class="selector-mayor50-titulo">SELECCIONE LA MODALIDAD +50</div>
+          <div class="selector-mayor50-opciones">
+            <label class="opcion-mayor50">
+              <input type="radio" name="modalidadMayor50" value="INDIVIDUAL MASCULINO +50" data-cantidad="1">
+              <span><strong>INDIVIDUAL MASCULINO +50</strong><small>Agrega 1 competidor masculino de 50 años o más.</small></span>
+            </label>
+            <label class="opcion-mayor50">
+              <input type="radio" name="modalidadMayor50" value="INDIVIDUAL FEMENINO +50" data-cantidad="1">
+              <span><strong>INDIVIDUAL FEMENINO +50</strong><small>Agrega 1 competidora femenina de 50 años o más.</small></span>
+            </label>
+            <label class="opcion-mayor50">
+              <input type="radio" name="modalidadMayor50" value="GRUPAL MASCULINO +50" data-cantidad="4">
+              <span><strong>GRUPAL MASCULINO +50</strong><small>Agrega 4 competidores masculinos de 50 años o más.</small></span>
+            </label>
+            <label class="opcion-mayor50">
+              <input type="radio" name="modalidadMayor50" value="GRUPAL FEMENINO +50" data-cantidad="4">
+              <span><strong>GRUPAL FEMENINO +50</strong><small>Agrega 4 competidoras femeninas de 50 años o más.</small></span>
+            </label>
+            <label class="opcion-mayor50">
+              <input type="radio" name="modalidadMayor50" value="GRUPO MIXTO +50" data-cantidad="4">
+              <span><strong>GRUPO MIXTO +50</strong><small>Agrega 4 integrantes mixtos de 50 años o más.</small></span>
+            </label>
+          </div>
+        </div>
         <div class="nav">
           <button type="button" class="btn btn-pri" data-siguiente onclick="avanzarSeguro()">SIGUIENTE →</button>
         </div>
@@ -498,6 +727,32 @@
       <section class="paso" data-paso="2">
         <div class="paso-titulo">Datos del capitán</div>
         <p class="paso-ayuda">El capitán es el responsable de la inscripción. Todos los campos son obligatorios.</p>
+
+        <div class="procedencia-box">
+          <div class="procedencia-titulo">Procedencia de la delegación</div>
+          <div class="fila">
+            <div class="campo">
+              <label for="cuerpoBomberos">Cuerpo de Bomberos</label>
+              <input
+                type="text"
+                id="cuerpoBomberos"
+                placeholder="Ej.: Dirección Nacional de Bomberos"
+                autocomplete="organization"
+                required
+              >
+            </div>
+            <div class="campo">
+              <label for="paisInscripcion">País</label>
+              <input
+                type="text"
+                id="paisInscripcion"
+                placeholder="Ej.: Uruguay"
+                autocomplete="country-name"
+                required
+              >
+            </div>
+          </div>
+        </div>
         <div class="campo">
           <label for="capNombre">Nombre y apellido</label>
           <input type="text" id="capNombre" autocomplete="name" required>
@@ -519,10 +774,24 @@
         <div class="campo">
           <label>Hospedaje del capitán</label>
           <div class="opciones-si-no hospedaje-selector" role="radiogroup" aria-label="Hospedaje del capitán">
-            <label class="opcion"><input type="radio" name="hospedajeCapitan" value="organizacion">HOSPEDAJE DE LA ORGANIZACIÓN</label>
-            <label class="opcion"><input type="radio" name="hospedajeCapitan" value="propio">ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</label>
+            <label class="opcion">
+              <input type="radio" name="hospedajeCapitan" value="organizacion">
+              <span class="opcion-hospedaje-titulo">HOSPEDAJE DE LA ORGANIZACIÓN</span>
+              <span class="opcion-hospedaje-desc">
+                La organización coordinará alojamiento únicamente para quienes seleccionen
+                “Hospedaje de la organización” durante los días previstos para la competencia,
+                con los gastos cubiertos.
+              </span>
+            </label>
+            <label class="opcion">
+              <input type="radio" name="hospedajeCapitan" value="propio">
+              <span class="opcion-hospedaje-titulo">ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</span>
+              <span class="opcion-hospedaje-desc">
+                El alojamiento deberá gestionarlo individualmente en el formulario de hospedaje,
+                asumiendo los costos de este.
+              </span>
+            </label>
           </div>
-          <div class="aloja-nota">La organización coordinará alojamiento únicamente para quienes seleccionen “Hospedaje de la organización”.</div>
         </div>
         <div class="nav">
           <button type="button" class="btn btn-sec" data-anterior onclick="retrocederSeguro()">← ANTERIOR</button>
@@ -533,13 +802,20 @@
       <!-- PASO 3: COMPETIDORES -->
       <section class="paso" data-paso="3">
         <div class="paso-titulo">Competidores</div>
-        <p class="paso-ayuda">Indicá cuántos competidores integran el equipo (de 1 a 14) y completá los datos de cada uno. El carnet de salud es obligatorio para todos. La ergometría solo se solicita a competidores <strong>extranjeros mayores de 35 años</strong>.</p>
-        <div class="contador" aria-label="Cantidad de competidores">
-          <button type="button" id="menosComp" aria-label="Quitar competidor">−</button>
+        <p class="paso-ayuda">
+          La cantidad de competidores se determina automáticamente según las modalidades seleccionadas.
+          Debe completar la totalidad de los competidores requeridos para continuar. El carnet de salud
+          es obligatorio para todos. La ergometría solo se solicita a competidores
+          <strong>extranjeros mayores de 35 años</strong>.
+          Los formularios identificados como <strong>Individual +50</strong> o
+          <strong>Grupal +50</strong> exigirán una edad mínima de 50 años; esto no afectará a
+          los competidores inscriptos en las demás modalidades.
+        </p>
+        <div class="contador-automatico" aria-label="Cantidad obligatoria de competidores">
           <div class="valor" id="valorComp">1</div>
-          <button type="button" id="masComp" aria-label="Agregar competidor">+</button>
+          <p>Cantidad obligatoria de competidores según las modalidades seleccionadas.</p>
         </div>
-        <div class="contador-nota">Cantidad de competidores (1 a 14)</div>
+        <div id="detalleCantidadModalidades" class="detalle-cantidad-modalidades"></div>
         <div id="listaComp"></div>
         <div class="nav">
           <button type="button" class="btn btn-sec" data-anterior onclick="retrocederSeguro()">← ANTERIOR</button>
@@ -618,7 +894,11 @@
         <h3 id="tituloWhatsapp">PASO IMPORTANTE</h3>
         <p>
           Para recibir avisos, horarios e información oficial del evento,
-          deberá unirse al <strong>GRUPO DE WHATSAPP</strong>.
+          únicamente el <strong>CAPITÁN DE CADA DELEGACIÓN</strong> deberá unirse al
+          <strong>GRUPO DE WHATSAPP</strong>.
+        </p>
+        <p>
+          Los demás competidores no deben ingresar al grupo.
         </p>
         <a
           class="btn-whatsapp"
@@ -679,6 +959,179 @@ function mostrarMsj(texto, tipo){
   m.style.display = texto ? 'block' : 'none';
 }
 
+/* ---------- Reglas de cantidad por modalidad ---------- */
+const CANTIDAD_POR_MODALIDAD = {
+  'INDIVIDUAL MASCULINO': 1,
+  'INDIVIDUAL FEMENINO': 1,
+  'GRUPAL MASCULINO': 4,
+  'GRUPAL FEMENINO': 4,
+  'GRUPO MIXTO': 4
+};
+
+function modalidadesActivas(){
+  return [...document.querySelectorAll('.dorsal.activo')]
+    .map(tarjeta => tarjeta.dataset.value)
+    .filter(Boolean);
+}
+
+function modalidadesBaseActivas(){
+  return modalidadesActivas().filter(modalidad => modalidad !== 'SEÑOR +50');
+}
+
+function mayor50Activo(){
+  return modalidadesActivas().includes('SEÑOR +50');
+}
+
+function tipoMayor50Seleccionado(){
+  return document.querySelector('input[name="modalidadMayor50"]:checked')?.value || '';
+}
+
+function cantidadMayor50(){
+  if (!mayor50Activo()) return 0;
+  const seleccionado = document.querySelector('input[name="modalidadMayor50"]:checked');
+  return seleccionado ? Number(seleccionado.dataset.cantidad || 0) : 0;
+}
+
+function modalidadesParaEnvio(){
+  const modalidades = [...modalidadesBaseActivas()];
+  const tipo50 = tipoMayor50Seleccionado();
+
+  if (mayor50Activo() && tipo50) modalidades.push(tipo50);
+
+  return modalidades;
+}
+
+function planCompetidores(){
+  const plan = [];
+
+  modalidadesBaseActivas().forEach(modalidad => {
+    const cantidad = CANTIDAD_POR_MODALIDAD[modalidad] || 0;
+
+    for (let i = 1; i <= cantidad; i++){
+      let sexoObligatorio = '';
+
+      if (modalidad === 'INDIVIDUAL MASCULINO' || modalidad === 'GRUPAL MASCULINO'){
+        sexoObligatorio = 'Masculino';
+      } else if (modalidad === 'INDIVIDUAL FEMENINO' || modalidad === 'GRUPAL FEMENINO'){
+        sexoObligatorio = 'Femenino';
+      } else if (modalidad === 'GRUPO MIXTO'){
+        // Grupo mixto: 2 masculinos y 2 femeninos.
+        sexoObligatorio = i <= 2 ? 'Masculino' : 'Femenino';
+      }
+
+      plan.push({
+        modalidad,
+        mayor50: false,
+        minimoEdad: 1,
+        sexoObligatorio,
+        posicion: i,
+        totalModalidad: cantidad
+      });
+    }
+  });
+
+  const modalidad50 = tipoMayor50Seleccionado();
+  const cantidad50 = cantidadMayor50();
+
+  if (cantidad50 && modalidad50){
+    for (let i = 1; i <= cantidad50; i++){
+      let sexoObligatorio = '';
+
+      if (modalidad50.includes('MASCULINO')){
+        sexoObligatorio = 'Masculino';
+      } else if (modalidad50.includes('FEMENINO')){
+        sexoObligatorio = 'Femenino';
+      } else if (modalidad50 === 'GRUPO MIXTO +50'){
+        // Grupo mixto +50: 2 masculinos y 2 femeninos.
+        sexoObligatorio = i <= 2 ? 'Masculino' : 'Femenino';
+      }
+
+      plan.push({
+        modalidad: modalidad50,
+        mayor50: true,
+        minimoEdad: 50,
+        sexoObligatorio,
+        posicion: i,
+        totalModalidad: cantidad50
+      });
+    }
+  }
+
+  return plan;
+}
+
+function cantidadRequeridaPorModalidades(){
+  return planCompetidores().length;
+}
+
+function actualizarCompetidoresSegunModalidades(){
+  const plan = planCompetidores();
+  const requerida = plan.length;
+  const cantidad = Math.max(1, requerida);
+
+  cantComp = cantidad;
+  renderComp(cantidad, plan);
+
+  const selector50 = $('selectorMayor50');
+  selector50.classList.toggle('visible', mayor50Activo());
+
+  if (!mayor50Activo()){
+    document.querySelectorAll('input[name="modalidadMayor50"]').forEach(radio => {
+      radio.checked = false;
+      radio.closest('.opcion-mayor50').classList.remove('activo');
+    });
+  }
+
+  const detalle = $('detalleCantidadModalidades');
+  if (!detalle) return;
+
+  if (!modalidadesActivas().length){
+    detalle.textContent = 'Seleccione al menos una modalidad para calcular la cantidad obligatoria.';
+    return;
+  }
+
+  const partes = modalidadesBaseActivas().map(modalidad => {
+    const cantidad = CANTIDAD_POR_MODALIDAD[modalidad];
+    const detalleSexo =
+      modalidad === 'GRUPO MIXTO'
+        ? ' · 2 masculinos y 2 femeninos'
+        : '';
+
+    return `${modalidad}: ${cantidad} competidor${cantidad === 1 ? '' : 'es'}${detalleSexo}`;
+  });
+
+  if (mayor50Activo()){
+    const tipo50 = tipoMayor50Seleccionado();
+    const cantidad50 = cantidadMayor50();
+
+    if (tipo50 && cantidad50){
+      const detalleSexo50 =
+        tipo50 === 'GRUPO MIXTO +50'
+          ? ' · 2 masculinos y 2 femeninos'
+          : '';
+
+      partes.push(
+        `${tipo50}: ${cantidad50} competidor${cantidad50 === 1 ? '' : 'es'}${detalleSexo50}`
+      );
+    } else {
+      partes.push('SEÑOR +50: falta elegir la modalidad específica');
+    }
+  }
+
+  detalle.textContent = partes.join(' · ') + ` · Total obligatorio: ${requerida}`;
+}
+
+/* ---------- Nacionalidad automática desde la delegación ---------- */
+$('paisInscripcion').addEventListener('input', () => {
+  completarNacionalidadesDesdeDelegacion();
+});
+
+document.addEventListener('input', e => {
+  if (e.target.classList && e.target.classList.contains('c-nac')){
+    e.target.dataset.autocompletado = 'false';
+  }
+});
+
 /* ---------- Dorsales y opciones ---------- */
 function seleccionarModalidad(tarjeta){
   const checkbox = tarjeta.querySelector('input[name="categoria"]');
@@ -705,6 +1158,7 @@ function seleccionarModalidad(tarjeta){
     }
   }
 
+  actualizarCompetidoresSegunModalidades();
   mostrarMsj('', '');
 }
 
@@ -721,6 +1175,15 @@ document.querySelectorAll('.dorsal').forEach(tarjeta => {
       e.preventDefault();
       seleccionarModalidad(this);
     }
+  });
+});
+
+document.querySelectorAll('input[name="modalidadMayor50"]').forEach(radio => {
+  radio.addEventListener('change', function(){
+    document.querySelectorAll('.opcion-mayor50').forEach(opcion => opcion.classList.remove('activo'));
+    this.closest('.opcion-mayor50').classList.add('activo');
+    actualizarCompetidoresSegunModalidades();
+    mostrarMsj('', '');
   });
 });
 
@@ -743,7 +1206,11 @@ function tarjetaCompetidor(i){
   const div = document.createElement('div');
   div.className = 'comp';
   div.innerHTML = `
-    <div class="comp-head"><span class="comp-num">${i}</span><span>COMPETIDOR ${i}</span></div>
+    <div class="comp-head">
+      <span class="comp-num">${i}</span>
+      <span>COMPETIDOR ${i}</span>
+      <span class="comp-modalidad">Modalidad pendiente</span>
+    </div>
     <div class="fila-3">
       <div class="campo"><label>Nombre completo</label><input type="text" class="c-nombre"></div>
       <div class="campo"><label>Sexo</label>
@@ -752,14 +1219,34 @@ function tarjetaCompetidor(i){
     </div>
     <div class="fila">
       <div class="campo"><label>Documento</label><input type="text" class="c-doc" placeholder="C.I. o pasaporte"></div>
-      <div class="campo"><label>Nacionalidad</label>
-        <select class="c-nac"><option value="">—</option><option value="uruguaya">Uruguaya</option><option value="extranjera">Extranjera</option></select></div>
+      <div class="campo"><label>País / nacionalidad</label>
+        <input
+          type="text"
+          class="c-nac"
+          placeholder="País del competidor"
+          autocomplete="country-name"
+        ></div>
     </div>
     <div class="campo">
       <label>Hospedaje del competidor</label>
       <div class="opciones-si-no hospedaje-selector" role="radiogroup" aria-label="Hospedaje del competidor ${i}">
-        <label class="opcion"><input type="radio" name="hospedajeComp${i}" value="organizacion">HOSPEDAJE DE LA ORGANIZACIÓN</label>
-        <label class="opcion"><input type="radio" name="hospedajeComp${i}" value="propio">ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</label>
+        <label class="opcion">
+          <input type="radio" name="hospedajeComp${i}" value="organizacion">
+          <span class="opcion-hospedaje-titulo">HOSPEDAJE DE LA ORGANIZACIÓN</span>
+          <span class="opcion-hospedaje-desc">
+            La organización coordinará alojamiento únicamente para quienes seleccionen
+            “Hospedaje de la organización” durante los días previstos para la competencia,
+            con los gastos cubiertos.
+          </span>
+        </label>
+        <label class="opcion">
+          <input type="radio" name="hospedajeComp${i}" value="propio">
+          <span class="opcion-hospedaje-titulo">ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</span>
+          <span class="opcion-hospedaje-desc">
+            El alojamiento deberá gestionarlo individualmente en el formulario de hospedaje,
+            asumiendo los costos de este.
+          </span>
+        </label>
       </div>
     </div>
     <div class="archivo">
@@ -806,28 +1293,124 @@ function tarjetaCompetidor(i){
   return div;
 }
 
-function renderComp(n){
-  const actual = listaComp.children.length;
-  if (n > actual){ for (let i = actual + 1; i <= n; i++) listaComp.appendChild(tarjetaCompetidor(i)); }
-  else { while (listaComp.children.length > n) listaComp.lastElementChild.remove(); }
-  $('valorComp').textContent = n;
+function normalizarPais(valor){
+  return String(valor || '')
+    .trim()
+    .toLocaleLowerCase('es')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 }
-$('masComp').addEventListener('click', () => { if (cantComp < 14) renderComp(++cantComp); });
-$('menosComp').addEventListener('click', () => { if (cantComp > 1) renderComp(--cantComp); });
+
+function esCompetidorExtranjero(paisCompetidor){
+  const paisDelegacion = normalizarPais($('paisInscripcion').value);
+  const paisPersona = normalizarPais(paisCompetidor);
+  return Boolean(paisDelegacion && paisPersona && paisDelegacion !== paisPersona);
+}
+
+function completarNacionalidadesDesdeDelegacion(forzar = false){
+  const pais = $('paisInscripcion').value.trim();
+
+  document.querySelectorAll('.c-nac').forEach(input => {
+    const fueAutocompletado = input.dataset.autocompletado === 'true';
+
+    if (forzar || !input.value.trim() || fueAutocompletado){
+      input.value = pais;
+      input.dataset.autocompletado = pais ? 'true' : 'false';
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+}
+
+function renderComp(n, plan = planCompetidores()){
+  const actual = listaComp.children.length;
+
+  if (n > actual){
+    for (let i = actual + 1; i <= n; i++){
+      listaComp.appendChild(tarjetaCompetidor(i));
+    }
+  } else {
+    while (listaComp.children.length > n) listaComp.lastElementChild.remove();
+  }
+
+  [...listaComp.children].forEach((tarjeta, indice) => {
+    const asignacion = plan[indice] || {
+      modalidad: 'Pendiente de selección',
+      mayor50: false,
+      minimoEdad: 1,
+      sexoObligatorio: '',
+      posicion: indice + 1,
+      totalModalidad: n
+    };
+
+    tarjeta.dataset.modalidad = asignacion.modalidad;
+    tarjeta.dataset.mayor50 = String(asignacion.mayor50);
+    tarjeta.dataset.minimoEdad = String(asignacion.minimoEdad);
+    tarjeta.querySelector('.comp-modalidad').textContent =
+      asignacion.modalidad +
+      (asignacion.totalModalidad > 1
+        ? ` · integrante ${asignacion.posicion} de ${asignacion.totalModalidad}`
+        : '');
+
+    const edad = tarjeta.querySelector('.c-edad');
+    edad.min = asignacion.minimoEdad;
+    edad.placeholder = asignacion.mayor50 ? 'Mínimo 50' : '';
+
+    const sexo = tarjeta.querySelector('.c-sexo');
+    if (asignacion.sexoObligatorio){
+      sexo.value = asignacion.sexoObligatorio;
+      sexo.disabled = true;
+      sexo.dataset.sexoObligatorio = asignacion.sexoObligatorio;
+    } else {
+      sexo.disabled = false;
+      sexo.dataset.sexoObligatorio = '';
+      if (asignacion.modalidad === 'GRUPO MIXTO +50'){
+        sexo.value = '';
+      }
+    }
+
+    const encabezado = tarjeta.querySelector('.comp-head span:nth-child(2)');
+    encabezado.textContent = asignacion.mayor50
+      ? `COMPETIDOR +50 ${asignacion.posicion}`
+      : `COMPETIDOR ${indice + 1}`;
+  });
+
+  $('valorComp').textContent = n;
+  completarNacionalidadesDesdeDelegacion();
+}
 renderComp(1);
+actualizarCompetidoresSegunModalidades();
 
 /* ---------- Validación por paso ---------- */
 function marcar(el, malo){ el.classList.toggle('invalido', malo); return !malo; }
 
 function validarPaso(n){
   if (n === 1){
-    if (!document.querySelectorAll('.dorsal.activo').length){
-      mostrarMsj('Seleccioná al menos una modalidad para continuar.', 'err'); return false;
+    const seleccionadas = modalidadesActivas();
+
+    if (!seleccionadas.length){
+      mostrarMsj('Seleccioná al menos una modalidad para continuar.', 'err');
+      return false;
     }
+
+    if (mayor50Activo() && !tipoMayor50Seleccionado()){
+      mostrarMsj(
+        'Seleccionaste Señor +50. Elegí si será individual masculino, individual femenino, grupal masculino, grupal femenino o grupo mixto.',
+        'err'
+      );
+      return false;
+    }
+
+    if (!cantidadRequeridaPorModalidades()){
+      mostrarMsj('No fue posible calcular la cantidad de competidores.', 'err');
+      return false;
+    }
+
     return true;
   }
   if (n === 2){
     let ok = true;
+    ok = marcar($('cuerpoBomberos'), !$('cuerpoBomberos').value.trim()) && ok;
+    ok = marcar($('paisInscripcion'), !$('paisInscripcion').value.trim()) && ok;
     ok = marcar($('capNombre'), !$('capNombre').value.trim()) && ok;
     ok = marcar($('capCI'), !$('capCI').value.trim()) && ok;
     ok = marcar($('capCel'), !$('capCel').value.trim()) && ok;
@@ -837,16 +1420,37 @@ function validarPaso(n){
     const grupoHospCap = document.querySelector('input[name="hospedajeCapitan"]').closest('.hospedaje-selector');
     grupoHospCap.classList.toggle('invalido', !hospCap);
     if (!hospCap) ok = false;
-    if (!ok) mostrarMsj('Completá todos los datos del capitán y seleccioná su hospedaje.', 'err');
+    if (!ok) mostrarMsj('Completá el país, el cuerpo de bomberos, todos los datos del capitán y su hospedaje.', 'err');
     return ok;
   }
   if (n === 3){
     let ok = true;
+    const requerida = cantidadRequeridaPorModalidades();
+
+    if (!requerida || listaComp.children.length !== requerida){
+      mostrarMsj(
+        `La inscripción requiere exactamente ${requerida || 0} competidor${requerida === 1 ? '' : 'es'} según las modalidades seleccionadas.`,
+        'err'
+      );
+      return false;
+    }
     [...listaComp.children].forEach(c => {
       ok = marcar(c.querySelector('.c-nombre'), !c.querySelector('.c-nombre').value.trim()) && ok;
-      ok = marcar(c.querySelector('.c-sexo'), !c.querySelector('.c-sexo').value) && ok;
+      const sexo = c.querySelector('.c-sexo');
+      const sexoObligatorio = sexo.dataset.sexoObligatorio || '';
+      const sexoInvalido =
+        !sexo.value ||
+        (sexoObligatorio && sexo.value !== sexoObligatorio);
+
+      ok = marcar(sexo, sexoInvalido) && ok;
       const edad = c.querySelector('.c-edad');
-      ok = marcar(edad, !edad.value || +edad.value < 1 || +edad.value > 99) && ok;
+      const minimoEdad = Number(c.dataset.minimoEdad || 1);
+      const edadInvalida =
+        !edad.value ||
+        +edad.value < minimoEdad ||
+        +edad.value > 99;
+
+      ok = marcar(edad, edadInvalida) && ok;
       ok = marcar(c.querySelector('.c-doc'), !c.querySelector('.c-doc').value.trim()) && ok;
       ok = marcar(c.querySelector('.c-nac'), !c.querySelector('.c-nac').value) && ok;
       const hospComp = c.querySelector('.hospedaje-selector input:checked');
@@ -864,7 +1468,14 @@ function validarPaso(n){
         if (!ergoOk) ok = false;
       }
     });
-    if (!ok) mostrarMsj('Revisá los datos y archivos de los competidores marcados.', 'err');
+    if (!ok){
+      mostrarMsj(
+        condicionMayor50Activa()
+          ? 'Revisá los datos y archivos marcados. En la condición Señor +50 todos los competidores deben tener 50 años o más.'
+          : 'Revisá los datos y archivos de los competidores marcados.',
+        'err'
+      );
+    }
     return ok;
   }
   return true;
@@ -888,6 +1499,12 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;
 function generarFicha(d){
   let h = '';
 
+  h += '<div class="ficha-sec"><div class="ficha-titulo">Procedencia</div>' +
+    '<table class="ficha-tabla">' +
+    '<tr><td class="et">Cuerpo de Bomberos</td><td>' + esc(d.cuerpoBomberos) + '</td></tr>' +
+    '<tr><td class="et">País</td><td>' + esc(d.pais) + '</td></tr>' +
+    '</table></div>';
+
   h += '<div class="ficha-sec"><div class="ficha-titulo">Datos del capitán</div>' +
     '<table class="ficha-tabla">' +
     '<tr><td class="et">Nombre y apellido</td><td>' + esc(d.capitan.nombre) + '</td></tr>' +
@@ -899,12 +1516,12 @@ function generarFicha(d){
 
   h += '<div class="ficha-sec"><div class="ficha-titulo">Competidores (' + d.competidores.length + ')</div>' +
     '<div class="ficha-scroll"><table class="ficha-tabla">' +
-    '<tr><th class="num-col">N°</th><th>Nombre</th><th>Sexo</th><th>Edad</th><th>Documento</th><th>Nacionalidad</th><th>Hospedaje</th><th>Carnet</th><th>Ergometría</th></tr>';
+    '<tr><th class="num-col">N°</th><th>Modalidad</th><th>Nombre</th><th>Sexo</th><th>Edad</th><th>Documento</th><th>Nacionalidad</th><th>Hospedaje</th><th>Carnet</th><th>Ergometría</th></tr>';
   d.competidores.forEach(c => {
-    const requiereErgo = c.nacionalidad === 'extranjera' && c.edad > 35;
-    h += '<tr><td class="num-col">' + c.numero + '</td><td>' + esc(c.nombre) + '</td><td>' + esc(c.sexo) +
+    const requiereErgo = esCompetidorExtranjero(c.nacionalidad) && c.edad > 35;
+    h += '<tr><td class="num-col">' + c.numero + '</td><td>' + esc(c.modalidad) + '</td><td>' + esc(c.nombre) + '</td><td>' + esc(c.sexo) +
       '</td><td>' + c.edad + '</td><td>' + esc(c.documento) + '</td><td>' +
-      (c.nacionalidad === 'extranjera' ? 'Extranjera' : 'Uruguaya') + '</td><td>' +
+      esc(c.nacionalidad) + '</td><td>' +
       (c.hospedaje === 'organizacion' ? 'Organización' : 'Familia/amigos') + '</td><td>' +
       (c.carnetSalud ? 'Presentado' : '—') + '</td><td>' +
       (c.ergometria ? 'Presentada' : (requiereErgo ? 'FALTA' : 'No requiere')) + '</td></tr>';
@@ -925,6 +1542,8 @@ async function enviarInscripcionDefinitiva() {
   try {
     const competidores = await Promise.all([...listaComp.children].map(async (c, i) => ({
       numero: i + 1,
+      modalidad: c.dataset.modalidad || '',
+      mayor50: c.dataset.mayor50 === 'true',
       nombre: c.querySelector('.c-nombre').value.trim(),
       sexo: c.querySelector('.c-sexo').value,
       edad: +c.querySelector('.c-edad').value,
@@ -937,14 +1556,15 @@ async function enviarInscripcionDefinitiva() {
     })));
 
 
-    const modalidadesSeleccionadas = [...document.querySelectorAll('.dorsal.activo')]
-      .map(tarjeta => tarjeta.dataset.value)
-      .filter(Boolean);
+    const modalidadesSeleccionadas = modalidadesParaEnvio();
 
     const datos = {
       // Se conserva "categoria" como texto para compatibilidad con el Apps Script actual.
       categoria: modalidadesSeleccionadas.join(', '),
       categorias: modalidadesSeleccionadas,
+      modalidadMayor50: tipoMayor50Seleccionado(),
+      cuerpoBomberos: $('cuerpoBomberos').value.trim(),
+      pais: $('paisInscripcion').value.trim(),
       capitan: {
         nombre: $('capNombre').value.trim(),
         ci: $('capCI').value.trim(),
