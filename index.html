@@ -1225,7 +1225,7 @@ function tarjetaCompetidor(i){
           placeholder="País del competidor"
           autocomplete="country-name"
         >
-        <div class="nota">Si el país es distinto de Uruguay y tiene más de 35 años, deberá adjuntar ergometría.</div>
+        
       </div>
     </div>
     <div class="campo">
@@ -1261,18 +1261,41 @@ function tarjetaCompetidor(i){
       <label>Ergometría</label>
       <label class="zona z-ergo"><span class="icono">⇪</span><span class="txt">Subir archivo (PDF o imagen)</span>
         <input type="file" class="c-ergo" accept=".pdf,.jpg,.jpeg,.png"></label>
-      <div class="nota">Obligatorio para extranjeros mayores de 35 años. Máx. ${MAX_ARCHIVO_MB} MB.</div>
+      <div class="nota">Obligatorio para competidores mayores de 35 años cuyo país sea distinto de Uruguay. Máx. ${MAX_ARCHIVO_MB} MB.</div>
     </div>`;
 
   const edad = div.querySelector('.c-edad');
   const nac = div.querySelector('.c-nac');
   const bloqueErgo = div.querySelector('.ergometria');
+  const archivoErgo = div.querySelector('.c-ergo');
+  const zonaErgo = div.querySelector('.z-ergo');
+
   function evaluarErgo(){
-    const requiere = (+edad.value > 35) && nac.value === 'extranjera';
+    const edadCompetidor = Number(edad.value || 0);
+    const paisCompetidor = normalizarPais(nac.value);
+
+    // Uruguay, URUGUAY, uruguay o cualquier combinación de mayúsculas
+    // y minúsculas se consideran el mismo país.
+    const esUruguay = paisCompetidor === 'uruguay';
+    const requiere = edadCompetidor > 35 && Boolean(paisCompetidor) && !esUruguay;
+
     bloqueErgo.classList.toggle('visible', requiere);
+
+    if (!requiere){
+      // Si deja de corresponder, se limpia un archivo que se hubiera cargado.
+      archivoErgo.value = '';
+      zonaErgo.classList.remove('cargado', 'invalido');
+      zonaErgo.querySelector('.txt').textContent = 'Subir archivo (PDF o imagen)';
+    }
   }
+
+  // Se recalcula inmediatamente al cambiar la edad o escribir el país.
   edad.addEventListener('input', evaluarErgo);
+  nac.addEventListener('input', evaluarErgo);
   nac.addEventListener('change', evaluarErgo);
+
+  // Permite que el país precargado desde la delegación también active la regla.
+  div.evaluarErgo = evaluarErgo;
 
   div.querySelectorAll('input[type=file]').forEach(f =>
     f.addEventListener('change', () => {
@@ -1319,6 +1342,7 @@ function completarNacionalidadesDesdeDelegacion(forzar = false){
     if (forzar || !input.value.trim() || fueAutocompletado){
       input.value = pais;
       input.dataset.autocompletado = pais ? 'true' : 'false';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
       input.dispatchEvent(new Event('change', { bubbles: true }));
     }
   });
