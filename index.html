@@ -1126,7 +1126,12 @@ $('paisInscripcion').addEventListener('input', () => {
 });
 
 document.addEventListener('input', e => {
-  if (e.target.classList && e.target.classList.contains('c-nac')){
+  if (
+    e.isTrusted &&
+    e.target.classList &&
+    e.target.classList.contains('c-nac')
+  ){
+    // Desde este momento se respeta la excepción ingresada manualmente.
     e.target.dataset.autocompletado = 'false';
   }
 });
@@ -1334,14 +1339,20 @@ function esCompetidorExtranjero(paisCompetidor){
 }
 
 function completarNacionalidadesDesdeDelegacion(forzar = false){
-  const pais = $('paisInscripcion').value.trim();
+  const paisDelegacion = $('paisInscripcion').value.trim();
 
   document.querySelectorAll('.c-nac').forEach(input => {
     const fueAutocompletado = input.dataset.autocompletado === 'true';
+    const estaVacio = !input.value.trim();
 
-    if (forzar || !input.value.trim() || fueAutocompletado){
-      input.value = pais;
-      input.dataset.autocompletado = pais ? 'true' : 'false';
+    // Se completa automáticamente si:
+    // 1) el campo está vacío,
+    // 2) todavía conserva un valor autocompletado,
+    // 3) se solicita una actualización forzada.
+    if (forzar || estaVacio || fueAutocompletado){
+      input.value = paisDelegacion;
+      input.dataset.autocompletado = paisDelegacion ? 'true' : 'false';
+
       input.dispatchEvent(new Event('input', { bubbles: true }));
       input.dispatchEvent(new Event('change', { bubbles: true }));
     }
