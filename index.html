@@ -805,8 +805,7 @@
         <p class="paso-ayuda">
           La cantidad de competidores se determina automáticamente según las modalidades seleccionadas.
           Debe completar la totalidad de los competidores requeridos para continuar. El carnet de salud
-          es obligatorio para todos. La ergometría solo se solicita a competidores
-          <strong>extranjeros mayores de 35 años</strong>.
+          es obligatorio para todos. La ergometría es obligatoria para todo competidor <strong>mayor de 35 años cuyo país sea distinto de Uruguay</strong>.
           Los formularios identificados como <strong>Individual +50</strong> o
           <strong>Grupal +50</strong> exigirán una edad mínima de 50 años; esto no afectará a
           los competidores inscriptos en las demás modalidades.
@@ -1225,7 +1224,9 @@ function tarjetaCompetidor(i){
           class="c-nac"
           placeholder="País del competidor"
           autocomplete="country-name"
-        ></div>
+        >
+        <div class="nota">Si el país es distinto de Uruguay y tiene más de 35 años, deberá adjuntar ergometría.</div>
+      </div>
     </div>
     <div class="campo">
       <label>Hospedaje del competidor</label>
@@ -1256,7 +1257,7 @@ function tarjetaCompetidor(i){
       <div class="nota">Obligatorio. Máx. ${MAX_ARCHIVO_MB} MB.</div>
     </div>
     <div class="archivo ergometria">
-      <div class="alerta-ergo">⚠ Por ser competidor <strong>extranjero mayor de 35 años</strong>, debe presentar ergometría.</div>
+      <div class="alerta-ergo">⚠ Por ser mayor de 35 años y tener un país distinto de Uruguay, debe presentar ergometría obligatoria.</div>
       <label>Ergometría</label>
       <label class="zona z-ergo"><span class="icono">⇪</span><span class="txt">Subir archivo (PDF o imagen)</span>
         <input type="file" class="c-ergo" accept=".pdf,.jpg,.jpeg,.png"></label>
@@ -1302,9 +1303,11 @@ function normalizarPais(valor){
 }
 
 function esCompetidorExtranjero(paisCompetidor){
-  const paisDelegacion = normalizarPais($('paisInscripcion').value);
   const paisPersona = normalizarPais(paisCompetidor);
-  return Boolean(paisDelegacion && paisPersona && paisDelegacion !== paisPersona);
+
+  // Para exigir ergometría, se considera extranjero a todo competidor
+  // cuyo país sea distinto de Uruguay, sin importar el país de la delegación.
+  return Boolean(paisPersona && paisPersona !== 'uruguay');
 }
 
 function completarNacionalidadesDesdeDelegacion(forzar = false){
