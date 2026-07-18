@@ -81,13 +81,13 @@
   .dorsales{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
   .dorsal{position:relative;cursor:pointer;background:var(--carbon);border:1px solid var(--linea);padding:16px 12px 14px;text-align:center;transition:transform .15s ease,border-color .15s ease,background .15s ease}
   .dorsal:hover{transform:translateY(-2px);border-color:var(--dorado)}
-  .dorsal input{position:absolute;inset:0;width:100%;height:100%;opacity:.001;cursor:pointer;z-index:3}
+  .dorsal input{display:none}
   .dorsal .pinza{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:26px;height:5px;background:var(--linea);border-radius:2px}
   .dorsal .tipo{font-family:'Staatliches',sans-serif;font-size:1.3rem;letter-spacing:.05em;margin-top:10px;line-height:1.05}
   .dorsal .sub{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--humo);margin-top:4px}
-  .dorsal.activo{background:linear-gradient(160deg,var(--rojo-osc),var(--rojo));border-color:var(--dorado)}
-  .dorsal.activo .pinza{background:var(--dorado)}
-  .dorsal.activo .sub{color:var(--dorado-suave)}
+  .dorsal.activo{background:linear-gradient(160deg,#176b3a,#249a55);border-color:#67e394;box-shadow:0 0 0 2px rgba(37,211,102,.14)}
+  .dorsal.activo .pinza{background:#9af0b9}
+  .dorsal.activo .sub{color:#d9ffe7}
   .dorsal:focus-within{outline:2px solid var(--dorado);outline-offset:2px}
 
   /* Campos */
@@ -309,6 +309,147 @@
     .btn-whatsapp{width:100%;font-size:.98rem}
   }
 
+
+  /* Selección múltiple de modalidades */
+  .dorsal.activo::after{
+    content:"✓";
+    position:absolute;
+    top:8px;
+    right:9px;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#b9f6ce;
+    color:#0e4a29;
+    font-family:'Barlow',sans-serif;
+    font-size:.85rem;
+    font-weight:700;
+    z-index:2;
+  }
+
+
+  .modalidades-estado{
+    margin-top:12px;
+    padding:10px 12px;
+    border-left:3px solid var(--linea);
+    color:var(--humo);
+    font-size:.84rem;
+    line-height:1.4;
+  }
+  .modalidades-estado.ok{
+    border-left-color:#25D366;
+    color:#8ff0b2;
+    background:rgba(37,211,102,.08);
+  }
+
+
+  /* ---------- AVISO PREVIO AL ENVÍO ---------- */
+  .aviso-overlay{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(10,8,7,.86);
+    backdrop-filter:blur(5px);
+  }
+  .aviso-overlay.visible{display:flex}
+  .aviso-panel{
+    width:min(680px,100%);
+    max-height:92vh;
+    overflow:auto;
+    background:var(--carbon-2);
+    border:1px solid var(--linea);
+    border-top:5px solid var(--dorado);
+    padding:clamp(20px,4vw,34px);
+    box-shadow:0 24px 70px rgba(0,0,0,.48);
+  }
+  .aviso-panel h2{
+    font-family:'Staatliches',sans-serif;
+    font-size:clamp(1.7rem,5vw,2.35rem);
+    font-weight:400;
+    letter-spacing:.06em;
+    color:var(--dorado);
+    margin-bottom:10px;
+  }
+  .aviso-panel .aviso-intro{
+    color:var(--crema);
+    line-height:1.55;
+    margin-bottom:16px;
+  }
+  .aviso-detalle{
+    padding:16px;
+    background:var(--carbon);
+    border-left:4px solid var(--rojo);
+    margin-bottom:16px;
+  }
+  .aviso-detalle p{
+    color:var(--humo);
+    line-height:1.55;
+    margin-bottom:9px;
+  }
+  .aviso-detalle p:last-child{margin-bottom:0}
+  .aviso-detalle strong{color:var(--dorado-suave)}
+  .aviso-form-link{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    min-height:52px;
+    padding:13px 18px;
+    margin:14px 0 18px;
+    background:linear-gradient(160deg,var(--rojo),var(--rojo-osc));
+    border:1px solid var(--dorado);
+    color:var(--crema);
+    text-decoration:none;
+    text-align:center;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.08rem;
+    letter-spacing:.08em;
+  }
+  .aviso-form-link:hover{filter:brightness(1.1)}
+  .aviso-aceptacion{
+    display:flex;
+    align-items:flex-start;
+    gap:11px;
+    cursor:pointer;
+    padding:13px;
+    background:rgba(212,169,78,.08);
+    border:1px solid var(--linea);
+    color:var(--crema);
+    line-height:1.45;
+    text-transform:none;
+    letter-spacing:0;
+    font-size:.9rem;
+  }
+  .aviso-aceptacion input{
+    width:19px;
+    height:19px;
+    flex:none;
+    margin-top:1px;
+    accent-color:#25D366;
+  }
+  .aviso-acciones{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+  }
+  .aviso-acciones .btn{flex:1}
+  #btnEnvioDefinitivo:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    filter:grayscale(.5);
+  }
+  @media(max-width:560px){
+    .aviso-acciones{flex-direction:column-reverse}
+    .aviso-panel{padding:20px 16px}
+  }
+
 </style>
 </head>
 <body>
@@ -338,15 +479,16 @@
       <!-- PASO 1: MODALIDAD -->
       <section class="paso activo" data-paso="1">
         <div class="paso-titulo">Modalidad</div>
-        <p class="paso-ayuda">Seleccioná la categoría en la que competirá tu equipo.</p>
-        <div class="dorsales" role="radiogroup" aria-label="Modalidad de competencia">
-          <label class="dorsal"><input type="radio" name="categoria" value="INDIVIDUAL MASCULINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Masculino</span></label>
-          <label class="dorsal"><input type="radio" name="categoria" value="INDIVIDUAL FEMENINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Femenino</span></label>
-          <label class="dorsal"><input type="radio" name="categoria" value="GRUPAL MASCULINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Masculino</span></label>
-          <label class="dorsal"><input type="radio" name="categoria" value="GRUPAL FEMENINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Femenino</span></label>
-          <label class="dorsal"><input type="radio" name="categoria" value="GRUPO MIXTO"><span class="pinza"></span><span class="tipo">GRUPO</span><span class="sub">Mixto</span></label>
-          <label class="dorsal"><input type="radio" name="categoria" value="SEÑOR +50"><span class="pinza"></span><span class="tipo">SEÑOR</span><span class="sub">+50</span></label>
+        <p class="paso-ayuda">Seleccioná una o más modalidades en las que competirá tu equipo.</p>
+        <div class="dorsales" role="group" aria-label="Modalidades de competencia">
+          <label class="dorsal" data-value="INDIVIDUAL MASCULINO" aria-pressed="false"><input type="checkbox" name="categoria" value="INDIVIDUAL MASCULINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Masculino</span></label>
+          <label class="dorsal" data-value="INDIVIDUAL FEMENINO" aria-pressed="false"><input type="checkbox" name="categoria" value="INDIVIDUAL FEMENINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Femenino</span></label>
+          <label class="dorsal" data-value="GRUPAL MASCULINO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPAL MASCULINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Masculino</span></label>
+          <label class="dorsal" data-value="GRUPAL FEMENINO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPAL FEMENINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Femenino</span></label>
+          <label class="dorsal" data-value="GRUPO MIXTO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPO MIXTO"><span class="pinza"></span><span class="tipo">GRUPO</span><span class="sub">Mixto</span></label>
+          <label class="dorsal" data-value="SEÑOR +50" aria-pressed="false"><input type="checkbox" name="categoria" value="SEÑOR +50"><span class="pinza"></span><span class="tipo">SEÑOR</span><span class="sub">+50</span></label>
         </div>
+        <p id="modalidadesEstado" class="modalidades-estado" aria-live="polite">Ninguna modalidad seleccionada.</p>
         <div class="nav">
           <button type="button" class="btn btn-pri" data-siguiente onclick="avanzarSeguro()">SIGUIENTE →</button>
         </div>
@@ -377,10 +519,10 @@
         <div class="campo">
           <label>Hospedaje del capitán</label>
           <div class="opciones-si-no hospedaje-selector" role="radiogroup" aria-label="Hospedaje del capitán">
-            <label class="opcion"><input type="radio" name="hospedajeCapitan" value="organizacion">SOLICITA HOSPEDAJE DE LA ORGANIZACIÓN</label>
-            <label class="opcion"><input type="radio" name="hospedajeCapitan" value="propio">NO SOLICITA HOSPEDAJE</label>
+            <label class="opcion"><input type="radio" name="hospedajeCapitan" value="organizacion">HOSPEDAJE DE LA ORGANIZACIÓN</label>
+            <label class="opcion"><input type="radio" name="hospedajeCapitan" value="propio">ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</label>
           </div>
-          <div class="aloja-nota">La organización coordinará alojamiento únicamente para quienes seleccionen “Solicita hospedaje de la organización”.</div>
+          <div class="aloja-nota">La organización coordinará alojamiento únicamente para quienes seleccionen “Hospedaje de la organización”.</div>
         </div>
         <div class="nav">
           <button type="button" class="btn btn-sec" data-anterior onclick="retrocederSeguro()">← ANTERIOR</button>
@@ -409,11 +551,62 @@
       <div id="msj" role="alert"></div>
     </div>
 
+
+    <!-- AVISO OBLIGATORIO ANTES DEL ENVÍO -->
+    <div id="avisoHospedaje" class="aviso-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloAvisoHospedaje">
+      <div class="aviso-panel">
+        <h2 id="tituloAvisoHospedaje">INFORMACIÓN IMPORTANTE SOBRE HOSPEDAJE</h2>
+        <p class="aviso-intro">
+          Antes de confirmar la inscripción, lea atentamente la información correspondiente a
+          <strong>ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</strong>.
+        </p>
+
+        <div class="aviso-detalle">
+          <p>
+            Esta opción corresponde a quienes <strong>no utilizarán el hospedaje proporcionado por la organización</strong>
+            y gestionarán alojamiento con familiares, amistades o por sus propios medios.
+          </p>
+          <p>
+            <strong>Cada competidor</strong> que haya seleccionado esta alternativa deberá completar
+            individualmente el formulario complementario con los datos de la familia, amistad,
+            responsable o lugar donde se hospedará.
+          </p>
+          <p>
+            La inscripción a la competencia y el formulario complementario de hospedaje son registros diferentes:
+            completar uno no sustituye al otro.
+          </p>
+        </div>
+
+        <a
+          id="linkFormularioHospedaje"
+          class="aviso-form-link"
+          href="https://forms.google.com/REEMPLAZAR-CON-EL-LINK-REAL"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ABRIR FORMULARIO DE FAMILIA / AMIGOS
+        </a>
+
+        <label class="aviso-aceptacion">
+          <input type="checkbox" id="aceptoAvisoHospedaje">
+          <span>
+            He leído y comprendido la información. Me comprometo a que cada competidor que corresponda
+            complete el formulario complementario con sus datos de hospedaje.
+          </span>
+        </label>
+
+        <div class="aviso-acciones">
+          <button type="button" class="btn btn-sec" id="btnVolverAviso">VOLVER</button>
+          <button type="button" class="btn btn-pri" id="btnEnvioDefinitivo" disabled>ENVIAR INSCRIPCIÓN</button>
+        </div>
+      </div>
+    </div>
+
     <!-- CONFIRMACIÓN -->
     <div id="confirmacion">
       <div class="check" aria-hidden="true">✓</div>
       <h2>¡INSCRIPCIÓN RECIBIDA!</h2>
-      <p>Registramos la inscripción del equipo en la modalidad <strong id="catConfirmada"></strong>, con <strong id="cantConfirmada"></strong>.</p>
+      <p>Registramos la inscripción del equipo en la(s) modalidad(es) <strong id="catConfirmada"></strong>, con <strong id="cantConfirmada"></strong>.</p>
       <p>Enviamos un correo de confirmación a <strong id="mailConfirmado"></strong>.</p>
       <p>Nos vemos el <strong>10 de octubre</strong> en las <strong>Termas del Arapey</strong>.</p>
 
@@ -488,20 +681,47 @@ function mostrarMsj(texto, tipo){
 
 /* ---------- Dorsales y opciones ---------- */
 function seleccionarModalidad(tarjeta){
-  const radio = tarjeta.querySelector('input[type="radio"]');
-  if (!radio) return;
-  radio.checked = true;
-  radio.dispatchEvent(new Event('change', { bubbles: true }));
-  document.querySelectorAll('.dorsal').forEach(d => d.classList.remove('activo'));
-  tarjeta.classList.add('activo');
+  const checkbox = tarjeta.querySelector('input[name="categoria"]');
+  const nuevoEstado = !tarjeta.classList.contains('activo');
+
+  tarjeta.classList.toggle('activo', nuevoEstado);
+  tarjeta.setAttribute('aria-pressed', String(nuevoEstado));
+
+  if (checkbox) {
+    checkbox.checked = nuevoEstado;
+  }
+
+  const activas = [...document.querySelectorAll('.dorsal.activo')];
+  const estado = document.getElementById('modalidadesEstado');
+  if (estado){
+    if (activas.length){
+      estado.textContent = activas.length === 1
+        ? '1 modalidad seleccionada.'
+        : activas.length + ' modalidades seleccionadas.';
+      estado.classList.add('ok');
+    } else {
+      estado.textContent = 'Ninguna modalidad seleccionada.';
+      estado.classList.remove('ok');
+    }
+  }
+
   mostrarMsj('', '');
 }
+
 document.querySelectorAll('.dorsal').forEach(tarjeta => {
-  tarjeta.setAttribute('onclick', 'seleccionarModalidad(this)');
-  tarjeta.addEventListener('touchend', function(e){
+  tarjeta.setAttribute('tabindex', '0');
+
+  tarjeta.addEventListener('click', function(e){
     e.preventDefault();
     seleccionarModalidad(this);
-  }, { passive: false });
+  });
+
+  tarjeta.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      seleccionarModalidad(this);
+    }
+  });
 });
 
 document.addEventListener('click', e => {
@@ -538,8 +758,8 @@ function tarjetaCompetidor(i){
     <div class="campo">
       <label>Hospedaje del competidor</label>
       <div class="opciones-si-no hospedaje-selector" role="radiogroup" aria-label="Hospedaje del competidor ${i}">
-        <label class="opcion"><input type="radio" name="hospedajeComp${i}" value="organizacion">SOLICITA HOSPEDAJE DE LA ORGANIZACIÓN</label>
-        <label class="opcion"><input type="radio" name="hospedajeComp${i}" value="propio">NO SOLICITA HOSPEDAJE</label>
+        <label class="opcion"><input type="radio" name="hospedajeComp${i}" value="organizacion">HOSPEDAJE DE LA ORGANIZACIÓN</label>
+        <label class="opcion"><input type="radio" name="hospedajeComp${i}" value="propio">ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</label>
       </div>
     </div>
     <div class="archivo">
@@ -601,8 +821,8 @@ function marcar(el, malo){ el.classList.toggle('invalido', malo); return !malo; 
 
 function validarPaso(n){
   if (n === 1){
-    if (!document.querySelector('input[name="categoria"]:checked')){
-      mostrarMsj('Seleccioná una modalidad para continuar.', 'err'); return false;
+    if (!document.querySelectorAll('.dorsal.activo').length){
+      mostrarMsj('Seleccioná al menos una modalidad para continuar.', 'err'); return false;
     }
     return true;
   }
@@ -674,7 +894,7 @@ function generarFicha(d){
     '<tr><td class="et">Cédula</td><td>' + esc(d.capitan.ci) + '</td></tr>' +
     '<tr><td class="et">Celular</td><td>' + esc(d.capitan.celular) + '</td></tr>' +
     '<tr><td class="et">Correo</td><td>' + esc(d.capitan.email) + '</td></tr>' +
-    '<tr><td class="et">Hospedaje</td><td>' + (d.capitan.hospedaje === 'organizacion' ? 'Solicita hospedaje de la organización' : 'No solicita hospedaje') + '</td></tr>' +
+    '<tr><td class="et">Hospedaje</td><td>' + (d.capitan.hospedaje === 'organizacion' ? 'Hospedaje de la organización' : 'Alquiler de hospedaje con familia/amigos') + '</td></tr>' +
     '</table></div>';
 
   h += '<div class="ficha-sec"><div class="ficha-titulo">Competidores (' + d.competidores.length + ')</div>' +
@@ -685,7 +905,7 @@ function generarFicha(d){
     h += '<tr><td class="num-col">' + c.numero + '</td><td>' + esc(c.nombre) + '</td><td>' + esc(c.sexo) +
       '</td><td>' + c.edad + '</td><td>' + esc(c.documento) + '</td><td>' +
       (c.nacionalidad === 'extranjera' ? 'Extranjera' : 'Uruguaya') + '</td><td>' +
-      (c.hospedaje === 'organizacion' ? 'Sí' : 'No') + '</td><td>' +
+      (c.hospedaje === 'organizacion' ? 'Organización' : 'Familia/amigos') + '</td><td>' +
       (c.carnetSalud ? 'Presentado' : '—') + '</td><td>' +
       (c.ergometria ? 'Presentada' : (requiereErgo ? 'FALTA' : 'No requiere')) + '</td></tr>';
   });
@@ -696,10 +916,11 @@ function generarFicha(d){
 }
 
 /* ---------- Envío ---------- */
-$('btnEnviar').addEventListener('click', async () => {
-  if (!validarPaso(3)) return;
-  const btn = $('btnEnviar');
-  btn.disabled = true; btn.textContent = 'ENVIANDO…';
+async function enviarInscripcionDefinitiva() {
+  const btn = $('btnEnvioDefinitivo');
+  btn.disabled = true;
+  btn.textContent = 'ENVIANDO…';
+  $('btnVolverAviso').disabled = true;
 
   try {
     const competidores = await Promise.all([...listaComp.children].map(async (c, i) => ({
@@ -716,8 +937,14 @@ $('btnEnviar').addEventListener('click', async () => {
     })));
 
 
+    const modalidadesSeleccionadas = [...document.querySelectorAll('.dorsal.activo')]
+      .map(tarjeta => tarjeta.dataset.value)
+      .filter(Boolean);
+
     const datos = {
-      categoria: document.querySelector('input[name="categoria"]:checked').value,
+      // Se conserva "categoria" como texto para compatibilidad con el Apps Script actual.
+      categoria: modalidadesSeleccionadas.join(', '),
+      categorias: modalidadesSeleccionadas,
       capitan: {
         nombre: $('capNombre').value.trim(),
         ci: $('capCI').value.trim(),
@@ -746,15 +973,41 @@ $('btnEnviar').addEventListener('click', async () => {
     $('cantConfirmada').textContent = datos.cantidadCompetidores + (datos.cantidadCompetidores === 1 ? ' competidor' : ' competidores');
     $('mailConfirmado').textContent = datos.capitan.email;
     generarFicha(datos);
+    $('avisoHospedaje').classList.remove('visible');
+    document.body.style.overflow = '';
     $('formulario').style.display = 'none';
     document.querySelector('.stepper').style.display = 'none';
     $('confirmacion').classList.add('visible');
     try { window.scrollTo(0, 0); } catch(e) {}
   } catch (e){
     mostrarMsj('No pudimos enviar la inscripción. Verificá tu conexión e intentá de nuevo.', 'err');
-    btn.disabled = false; btn.textContent = 'CONFIRMAR INSCRIPCIÓN';
+    btn.disabled = false;
+    btn.textContent = 'ENVIAR INSCRIPCIÓN';
+    $('btnVolverAviso').disabled = false;
   }
+}
+
+/* ---------- Aviso obligatorio previo ---------- */
+$('btnEnviar').addEventListener('click', () => {
+  if (!validarPaso(3)) return;
+  $('aceptoAvisoHospedaje').checked = false;
+  $('btnEnvioDefinitivo').disabled = true;
+  $('btnEnvioDefinitivo').textContent = 'ENVIAR INSCRIPCIÓN';
+  $('btnVolverAviso').disabled = false;
+  $('avisoHospedaje').classList.add('visible');
+  document.body.style.overflow = 'hidden';
 });
+
+$('aceptoAvisoHospedaje').addEventListener('change', e => {
+  $('btnEnvioDefinitivo').disabled = !e.target.checked;
+});
+
+$('btnVolverAviso').addEventListener('click', () => {
+  $('avisoHospedaje').classList.remove('visible');
+  document.body.style.overflow = '';
+});
+
+$('btnEnvioDefinitivo').addEventListener('click', enviarInscripcionDefinitiva);
 </script>
 </body>
 </html>
