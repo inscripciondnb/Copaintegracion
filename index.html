@@ -718,6 +718,30 @@
     }
   }
 
+
+  .dorsal{
+    appearance:none;
+    -webkit-appearance:none;
+    width:100%;
+    color:inherit;
+    font-family:inherit;
+  }
+
+
+  button.dorsal.activo,
+  button.dorsal[data-seleccionada="true"]{
+    background:linear-gradient(160deg,#176b3a,#249a55)!important;
+    border-color:#67e394!important;
+    color:#ffffff!important;
+    box-shadow:0 0 0 3px rgba(37,211,102,.2)!important;
+  }
+  button.dorsal{
+    touch-action:manipulation;
+    cursor:pointer;
+    position:relative;
+    z-index:1;
+  }
+
 </style>
 </head>
 <body>
@@ -757,17 +781,16 @@
           en los grupos mixtos se asignarán dos masculinos y dos femeninos.
         </p>
         <div class="dorsales" role="group" aria-label="Modalidades de competencia">
-          <label class="dorsal" data-value="INDIVIDUAL MASCULINO" aria-pressed="false"><input type="checkbox" name="categoria" value="INDIVIDUAL MASCULINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Masculino</span></label>
-          <label class="dorsal" data-value="INDIVIDUAL FEMENINO" aria-pressed="false"><input type="checkbox" name="categoria" value="INDIVIDUAL FEMENINO"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Femenino</span></label>
-          <label class="dorsal" data-value="GRUPAL MASCULINO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPAL MASCULINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Masculino</span></label>
-          <label class="dorsal" data-value="GRUPAL FEMENINO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPAL FEMENINO"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Femenino</span></label>
-          <label class="dorsal" data-value="GRUPO MIXTO" aria-pressed="false"><input type="checkbox" name="categoria" value="GRUPO MIXTO"><span class="pinza"></span><span class="tipo">GRUPO</span><span class="sub">Mixto</span></label>
-          <label class="dorsal dorsal-mayor50" data-value="SEÑOR +50" aria-pressed="false">
-            <input type="checkbox" name="categoria" value="SEÑOR +50">
+          <button type="button" class="dorsal" data-value="INDIVIDUAL MASCULINO" aria-pressed="false" onclick="alternarModalidadDirecta(this, event)"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Masculino</span></button>
+          <button type="button" class="dorsal" data-value="INDIVIDUAL FEMENINO" aria-pressed="false" onclick="alternarModalidadDirecta(this, event)"><span class="pinza"></span><span class="tipo">INDIVIDUAL</span><span class="sub">Femenino</span></button>
+          <button type="button" class="dorsal" data-value="GRUPAL MASCULINO" aria-pressed="false" onclick="alternarModalidadDirecta(this, event)"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Masculino</span></button>
+          <button type="button" class="dorsal" data-value="GRUPAL FEMENINO" aria-pressed="false" onclick="alternarModalidadDirecta(this, event)"><span class="pinza"></span><span class="tipo">GRUPAL</span><span class="sub">Femenino</span></button>
+          <button type="button" class="dorsal" data-value="GRUPO MIXTO" aria-pressed="false" onclick="alternarModalidadDirecta(this, event)"><span class="pinza"></span><span class="tipo">GRUPO</span><span class="sub">Mixto</span></button>
+          <button type="button" class="dorsal dorsal-mayor50" data-value="SEÑOR +50" aria-pressed="false" onclick="alternarModalidadDirecta(this, event)">
             <span class="pinza"></span>
             <span class="tipo">SEÑOR +50</span>
             <span class="sub">Elegir individual o grupal</span>
-          </label>
+          </button>
         </div>
         <p id="modalidadesEstado" class="modalidades-estado" aria-live="polite">Ninguna modalidad seleccionada.</p>
 
@@ -1015,7 +1038,7 @@ const CANTIDAD_POR_MODALIDAD = {
 };
 
 function modalidadesActivas(){
-  return [...document.querySelectorAll('.dorsal.activo')]
+  return [...document.querySelectorAll('button.dorsal.activo')]
     .map(tarjeta => tarjeta.dataset.value)
     .filter(Boolean);
 }
@@ -1122,7 +1145,8 @@ function actualizarCompetidoresSegunModalidades(){
   selector50.classList.toggle('visible', mayor50Activo());
 
   if (!mayor50Activo()){
-    document.querySelectorAll('input[name="modalidadMayor50"]').forEach(radio => {
+    
+document.querySelectorAll('input[name="modalidadMayor50"]').forEach(radio => {
       radio.checked = false;
       radio.closest('.opcion-mayor50').classList.remove('activo');
     });
@@ -1174,50 +1198,56 @@ $('paisInscripcion').addEventListener('input', () => {
 });
 
 /* ---------- Dorsales y opciones ---------- */
-function seleccionarModalidad(tarjeta){
-  const checkbox = tarjeta.querySelector('input[name="categoria"]');
-  const nuevoEstado = !tarjeta.classList.contains('activo');
-
-  tarjeta.classList.toggle('activo', nuevoEstado);
-  tarjeta.setAttribute('aria-pressed', String(nuevoEstado));
-
-  if (checkbox) {
-    checkbox.checked = nuevoEstado;
-  }
-
-  const activas = [...document.querySelectorAll('.dorsal.activo')];
+function actualizarEstadoVisualModalidades(){
+  const activas = [...document.querySelectorAll('button.dorsal.activo')];
   const estado = document.getElementById('modalidadesEstado');
-  if (estado){
-    if (activas.length){
-      estado.textContent = activas.length === 1
-        ? '1 modalidad seleccionada.'
-        : activas.length + ' modalidades seleccionadas.';
-      estado.classList.add('ok');
-    } else {
-      estado.textContent = 'Ninguna modalidad seleccionada.';
-      estado.classList.remove('ok');
-    }
-  }
 
-  actualizarCompetidoresSegunModalidades();
-  mostrarMsj('', '');
+  if (!estado) return;
+
+  if (activas.length){
+    estado.textContent = activas.length === 1
+      ? '1 modalidad seleccionada.'
+      : activas.length + ' modalidades seleccionadas.';
+    estado.classList.add('ok');
+  } else {
+    estado.textContent = 'Ninguna modalidad seleccionada.';
+    estado.classList.remove('ok');
+  }
 }
 
-document.querySelectorAll('.dorsal').forEach(tarjeta => {
-  tarjeta.setAttribute('tabindex', '0');
+function alternarModalidadDirecta(tarjeta, evento){
+  if (evento){
+    evento.preventDefault();
+    evento.stopPropagation();
+  }
 
-  tarjeta.addEventListener('click', function(e){
-    e.preventDefault();
-    seleccionarModalidad(this);
-  });
+  const nuevoEstado = !tarjeta.classList.contains('activo');
 
-  tarjeta.addEventListener('keydown', function(e){
-    if (e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      seleccionarModalidad(this);
-    }
-  });
-});
+  // Primero se actualiza visualmente. Esto no depende de ninguna otra función.
+  tarjeta.classList.toggle('activo', nuevoEstado);
+  tarjeta.setAttribute('aria-pressed', nuevoEstado ? 'true' : 'false');
+  tarjeta.dataset.seleccionada = nuevoEstado ? 'true' : 'false';
+
+  actualizarEstadoVisualModalidades();
+
+  // Después se recalculan los competidores. Un error aquí no desmarca la opción.
+  try {
+    actualizarCompetidoresSegunModalidades();
+    mostrarMsj('', '');
+  } catch (error) {
+    console.error('Error al actualizar competidores:', error);
+    mostrarMsj(
+      'La modalidad quedó seleccionada, pero ocurrió un error al generar los competidores.',
+      'err'
+    );
+  }
+
+  return false;
+}
+
+function seleccionarModalidad(tarjeta){
+  return alternarModalidadDirecta(tarjeta);
+}
 
 document.querySelectorAll('input[name="modalidadMayor50"]').forEach(radio => {
   radio.addEventListener('change', function(){
@@ -1350,10 +1380,10 @@ function tarjetaCompetidor(i){
     }
   }
 
-  // Se recalcula inmediatamente al cambiar la edad o escribir el país.
-  nac.addEventListener('input', evaluarErgo);
+  // Se recalcula inmediatamente al cambiar la edad.
+  edad.addEventListener('input', evaluarErgo);
 
-  // Permite que el país precargado desde la delegación también active la regla.
+  // Permite reevaluar la regla cuando cambia el país de la delegación.
   div.evaluarErgo = evaluarErgo;
 
   div.querySelectorAll('.c-ergo-estado').forEach(radio => {
@@ -1629,10 +1659,9 @@ function generarFicha(d){
 
 /* ---------- Envío ---------- */
 async function enviarInscripcionDefinitiva() {
-  const btn = $('btnEnvioDefinitivo');
+  const btn = $('btnEnviar');
   btn.disabled = true;
   btn.textContent = 'ENVIANDO…';
-  $('btnVolverAviso').disabled = true;
 
   try {
     const competidores = await Promise.all([...listaComp.children].map(async (c, i) => ({
@@ -1690,8 +1719,6 @@ async function enviarInscripcionDefinitiva() {
     $('cantConfirmada').textContent = datos.cantidadCompetidores + (datos.cantidadCompetidores === 1 ? ' competidor' : ' competidores');
     $('mailConfirmado').textContent = datos.capitan.email;
     generarFicha(datos);
-    $('avisoHospedaje').classList.remove('visible');
-    document.body.style.overflow = '';
     $('formulario').style.display = 'none';
     document.querySelector('.stepper').style.display = 'none';
     $('confirmacion').classList.add('visible');
@@ -1700,28 +1727,13 @@ async function enviarInscripcionDefinitiva() {
     mostrarMsj('No pudimos enviar la inscripción. Verificá tu conexión e intentá de nuevo.', 'err');
     btn.disabled = false;
     btn.textContent = 'ENVIAR INSCRIPCIÓN';
-    $('btnVolverAviso').disabled = false;
   }
 }
 
-/* ---------- Aviso obligatorio previo ---------- */
-$('btnEnviar').addEventListener('click', () => {
+/* ---------- Envío directo ---------- */
+$('btnEnviar').addEventListener('click', async () => {
   if (!validarPaso(3)) return;
-  $('aceptoAvisoHospedaje').checked = false;
-  $('btnEnvioDefinitivo').disabled = true;
-  $('btnEnvioDefinitivo').textContent = 'ENVIAR INSCRIPCIÓN';
-  $('btnVolverAviso').disabled = false;
-  $('avisoHospedaje').classList.add('visible');
-  document.body.style.overflow = 'hidden';
-});
-
-$('aceptoAvisoHospedaje').addEventListener('change', e => {
-  $('btnEnvioDefinitivo').disabled = !e.target.checked;
-});
-
-$('btnVolverAviso').addEventListener('click', () => {
-  $('avisoHospedaje').classList.remove('visible');
-  document.body.style.overflow = '';
+  await enviarInscripcionDefinitiva();
 });
 
 </script>
