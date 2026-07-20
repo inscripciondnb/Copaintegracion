@@ -1670,12 +1670,24 @@ function crearRequestId(){
   );
 }
 
-function consultarEstadoAppsScript(requestId, timeoutMs = 120000){
+function consultarEstadoAppsScript(requestId, timeoutMs = 180000){
   return new Promise((resolve, reject) => {
     const inicio = Date.now();
     let intento = 0;
+    let finalizado = false;
 
     function consultar(){
+      if (finalizado) return;
+
+      if (Date.now() - inicio >= timeoutMs){
+        finalizado = true;
+        reject(new Error(
+          'El servidor demoró en confirmar la inscripción. ' +
+          'Verifica tu correo antes de volver a enviarla.'
+        ));
+        return;
+      }
+
       intento += 1;
 
       const callback = '__estadoInscripcion_' +
@@ -1684,50 +1696,75 @@ function consultarEstadoAppsScript(requestId, timeoutMs = 120000){
 
       const script = document.createElement('script');
       const separador = SCRIPT_URL.includes('?') ? '&' : '?';
-      let resuelto = false;
 
-      function limpiar(){
-        try { delete window[callback]; } catch (e) { window[callback] = undefined; }
-        if (script.parentNode) script.parentNode.removeChild(script);
+      let callbackEjecutado = false;
+      let intentoCerrado = false;
+      let timeoutIntento;
+
+      function limpiarIntento(){
+        if (intentoCerrado) return;
+        intentoCerrado = true;
+
+        if (timeoutIntento) clearTimeout(timeoutIntento);
+
+        try {
+          delete window[callback];
+        } catch (e) {
+          window[callback] = undefined;
+        }
+
+        if (script.parentNode){
+          script.parentNode.removeChild(script);
+        }
+      }
+
+      function reintentar(demora = 2000){
+        limpiarIntento();
+        if (!finalizado) setTimeout(consultar, demora);
       }
 
       window[callback] = function(resultado){
-        resuelto = true;
-        limpiar();
+        callbackEjecutado = true;
+        limpiarIntento();
+
+        if (finalizado) return;
 
         if (resultado && resultado.ok === true){
+          finalizado = true;
           resolve(resultado);
           return;
         }
 
-        if (resultado && resultado.pendiente === false && resultado.error){
+        if (
+          resultado &&
+          resultado.pendiente === false &&
+          resultado.error
+        ){
+          finalizado = true;
           reject(new Error(resultado.error));
           return;
         }
 
-        if (Date.now() - inicio >= timeoutMs){
-          reject(new Error(
-            'El servidor no confirmó la inscripción dentro del tiempo esperado.'
-          ));
-          return;
-        }
+        setTimeout(consultar, 2000);
+      };
 
-        setTimeout(consultar, 1500);
+      script.onload = function(){
+        if (!callbackEjecutado && !finalizado){
+          reintentar(1500);
+        }
       };
 
       script.onerror = function(){
-        if (resuelto) return;
-        limpiar();
-
-        if (Date.now() - inicio >= timeoutMs){
-          reject(new Error(
-            'No fue posible consultar la confirmación del servidor.'
-          ));
-          return;
+        if (!finalizado){
+          reintentar(2500);
         }
-
-        setTimeout(consultar, 1800);
       };
+
+      timeoutIntento = setTimeout(function(){
+        if (!callbackEjecutado && !finalizado){
+          reintentar(1500);
+        }
+      }, 10000);
 
       script.src =
         SCRIPT_URL +
@@ -1736,10 +1773,11 @@ function consultarEstadoAppsScript(requestId, timeoutMs = 120000){
         '&callback=' + encodeURIComponent(callback) +
         '&_=' + Date.now();
 
+      script.async = true;
       document.head.appendChild(script);
     }
 
-    consultar();
+    setTimeout(consultar, 2500);
   });
 }
 
@@ -1847,7 +1885,7 @@ async function enviarInscripcionDefinitiva() {
   }
 
   try {
-    fetch(SCRIPT_URL, {
+    await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       cache: 'no-store',
