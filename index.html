@@ -344,114 +344,7 @@
     color:#8ff0b2;
     background:rgba(37,211,102,.08);
   }
-
-
-  /* ---------- AVISO PREVIO AL ENVÍO ---------- */
-  .aviso-overlay{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-    background:rgba(10,8,7,.86);
-    backdrop-filter:blur(5px);
-  }
-  .aviso-overlay.visible{display:flex}
-  .aviso-panel{
-    width:min(680px,100%);
-    max-height:92vh;
-    overflow:auto;
-    background:var(--carbon-2);
-    border:1px solid var(--linea);
-    border-top:5px solid var(--dorado);
-    padding:clamp(20px,4vw,34px);
-    box-shadow:0 24px 70px rgba(0,0,0,.48);
-  }
-  .aviso-panel h2{
-    font-family:'Staatliches',sans-serif;
-    font-size:clamp(1.7rem,5vw,2.35rem);
-    font-weight:400;
-    letter-spacing:.06em;
-    color:var(--dorado);
-    margin-bottom:10px;
-  }
-  .aviso-panel .aviso-intro{
-    color:var(--crema);
-    line-height:1.55;
-    margin-bottom:16px;
-  }
-  .aviso-detalle{
-    padding:16px;
-    background:var(--carbon);
-    border-left:4px solid var(--rojo);
-    margin-bottom:16px;
-  }
-  .aviso-detalle p{
-    color:var(--humo);
-    line-height:1.55;
-    margin-bottom:9px;
-  }
-  .aviso-detalle p:last-child{margin-bottom:0}
-  .aviso-detalle strong{color:var(--dorado-suave)}
-  .aviso-form-link{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:100%;
-    min-height:52px;
-    padding:13px 18px;
-    margin:14px 0 18px;
-    background:linear-gradient(160deg,var(--rojo),var(--rojo-osc));
-    border:1px solid var(--dorado);
-    color:var(--crema);
-    text-decoration:none;
-    text-align:center;
-    font-family:'Staatliches',sans-serif;
-    font-size:1.08rem;
-    letter-spacing:.08em;
-  }
-  .aviso-form-link:hover{filter:brightness(1.1)}
-  .aviso-aceptacion{
-    display:flex;
-    align-items:flex-start;
-    gap:11px;
-    cursor:pointer;
-    padding:13px;
-    background:rgba(212,169,78,.08);
-    border:1px solid var(--linea);
-    color:var(--crema);
-    line-height:1.45;
-    text-transform:none;
-    letter-spacing:0;
-    font-size:.9rem;
-  }
-  .aviso-aceptacion input{
-    width:19px;
-    height:19px;
-    flex:none;
-    margin-top:1px;
-    accent-color:#25D366;
-  }
-  .aviso-acciones{
-    display:flex;
-    gap:12px;
-    margin-top:20px;
-  }
-  .aviso-acciones .btn{flex:1}
-  #btnEnvioDefinitivo:disabled{
-    opacity:.45;
-    cursor:not-allowed;
-    filter:grayscale(.5);
-  }
-  @media(max-width:560px){
-    .aviso-acciones{flex-direction:column-reverse}
-    .aviso-panel{padding:20px 16px}
-  }
-
-
-  /* ---------- DATOS DE PROCEDENCIA ---------- */
+/* ---------- DATOS DE PROCEDENCIA ---------- */
   .procedencia-box{
     margin-bottom:22px;
     padding:18px;
@@ -786,6 +679,45 @@
     .estado-ergo{grid-template-columns:1fr}
   }
 
+
+  /* ---------- HOSPEDAJE COMPACTO ---------- */
+  .hospedaje-selector{
+    grid-template-columns:repeat(2,minmax(110px,180px));
+    gap:10px;
+    max-width:380px;
+    margin-bottom:0;
+  }
+  .hospedaje-selector .opcion{
+    min-height:48px;
+    padding:10px 14px;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .hospedaje-selector .opcion-hospedaje-titulo{
+    margin:0;
+    font-size:1.08rem;
+    line-height:1;
+  }
+  .hospedaje-selector .opcion-hospedaje-desc{
+    display:none;
+  }
+  .contacto-hospedaje{
+    margin-top:10px;
+    padding:10px 12px;
+  }
+  .contacto-hospedaje p{
+    margin:0 0 8px;
+    font-size:.78rem;
+    line-height:1.4;
+  }
+  @media(max-width:500px){
+    .hospedaje-selector{
+      grid-template-columns:1fr 1fr;
+      max-width:none;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -907,37 +839,31 @@
           <label for="capEmail">Correo electrónico <span style="text-transform:none;letter-spacing:0">(para enviarte la confirmación)</span></label>
           <input type="email" id="capEmail" autocomplete="email" required>
         </div>
-          <div class="campo">
-            <label for="capCel">Número de teléfono celular</label>
-            <input
-              type="tel"
-              id="capCel"
-              inputmode="tel"
-              autocomplete="tel"
-              placeholder="+598 9X XXX XXX"
-              required
-            >
-          </div>
+        <div class="campo">
+          <label for="capCel">Número de teléfono celular</label>
+          <input
+            type="tel"
+            id="capCel"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="+598 9X XXX XXX"
+            required
+          >
+        </div>
         <div class="campo">
           <label>HOSPEDAJE DE LA ORGANIZACIÓN</label>
           <div class="opciones-si-no hospedaje-selector" role="radiogroup" aria-label="Hospedaje del capitán">
             <label class="opcion">
               <input type="radio" name="hospedajeCapitan" value="organizacion">
               <span class="opcion-hospedaje-titulo">SÍ</span>
-              <span class="opcion-hospedaje-desc">Solicita hospedaje coordinado por la organización.</span>
             </label>
             <label class="opcion">
               <input type="radio" name="hospedajeCapitan" value="no">
               <span class="opcion-hospedaje-titulo">NO</span>
-              <span class="opcion-hospedaje-desc">No solicita hospedaje de la organización.</span>
             </label>
           </div>
           <div id="contactoHospedajeCapitan" class="contacto-hospedaje">
-            <p>
-              La organización se pondrá en contacto con el capitán de la delegación
-              para coordinar las opciones de alojamiento disponibles en las Termas del Arapey.
-              Los costos del alojamiento serán asumidos por la delegación.
-            </p>
+            <p>La organización se pondrá en contacto con usted para coordinar las opciones de alojamiento disponibles. Los costos del alojamiento serán asumidos íntegramente por la propia persona.</p>
           </div>
         </div>
         <div class="nav">
@@ -952,7 +878,7 @@
         <p class="paso-ayuda">
           La cantidad de competidores se determina automáticamente según las modalidades seleccionadas.
           Debe completar la totalidad de los competidores requeridos para continuar. El carnet de salud
-          es obligatorio para todos. La ergometría es necesaria para todo competidor <strong>mayor de 35 años cuyo país sea distinto de Uruguay</strong>. Si todavía no la tiene, podrá indicar que está <strong>en trámite</strong> y enviarla antes del <strong>3 de octubre de 2026</strong>.
+          es obligatorio para todos. La ergometría es necesaria para los competidores <strong>mayores de 35 años cuando el país de la delegación sea distinto de Uruguay</strong>. Si todavía no la tiene, podrá indicar que está <strong>en trámite</strong> y enviarla antes del <strong>3 de octubre de 2026</strong>.
           Los formularios identificados como <strong>Individual +50</strong> o
           <strong>Grupal +50</strong> exigirán una edad mínima de 50 años; esto no afectará a
           los competidores inscriptos en las demás modalidades.
@@ -975,53 +901,7 @@
 
 
     <!-- AVISO OBLIGATORIO ANTES DEL ENVÍO -->
-    <div id="avisoHospedaje" class="aviso-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloAvisoHospedaje">
-      <div class="aviso-panel">
-        <h2 id="tituloAvisoHospedaje">INFORMACIÓN IMPORTANTE SOBRE HOSPEDAJE</h2>
-        <p class="aviso-intro">
-          Antes de confirmar la inscripción, lea atentamente la información correspondiente a
-          <strong>ALQUILER DE HOSPEDAJE CON FAMILIA/AMIGOS</strong>.
-        </p>
 
-        <div class="aviso-detalle">
-          <p>
-            Esta opción corresponde a quienes <strong>no utilizarán el hospedaje proporcionado por la organización</strong>
-            y gestionarán alojamiento con familiares, amistades o por sus propios medios.
-          </p>
-          <p>
-            <strong>Cada competidor</strong> que haya seleccionado esta alternativa deberá completar
-            individualmente el formulario complementario con los datos de la familia, amistad,
-            responsable o lugar donde se hospedará.
-          </p>
-          <p>
-            La inscripción a la competencia y el formulario complementario de hospedaje son registros diferentes:
-            completar uno no sustituye al otro.
-          </p>
-        </div>
-
-        <a
-          id="linkFormularioHospedaje"
-          class="aviso-form-link"
-          href="https://inscripciondnb.github.io/HospedajeDNB/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          ABRIR FORMULARIO DE FAMILIA / AMIGOS
-        </a>
-
-        <label class="aviso-aceptacion">
-          <input type="checkbox" id="aceptoAvisoHospedaje">
-          <span>
-            He leído y comprendido la información. Me comprometo a que cada competidor que corresponda
-            complete el formulario complementario con sus datos de hospedaje.
-          </span>
-        </label>
-
-        <div class="aviso-acciones">
-          <button type="button" class="btn btn-sec" id="btnVolverAviso">VOLVER</button>
-          <button type="button" class="btn btn-pri" id="btnEnvioDefinitivo" disabled>ENVIAR INSCRIPCIÓN</button>
-        </div>
-      </div>
     </div>
 
     <!-- CONFIRMACIÓN -->
@@ -1287,20 +1167,10 @@ function actualizarCompetidoresSegunModalidades(){
   detalle.textContent = partes.join(' · ') + ` · Total obligatorio: ${requerida}`;
 }
 
-/* ---------- Nacionalidad automática desde la delegación ---------- */
 $('paisInscripcion').addEventListener('input', () => {
-  completarNacionalidadesDesdeDelegacion();
-});
-
-document.addEventListener('input', e => {
-  if (
-    e.isTrusted &&
-    e.target.classList &&
-    e.target.classList.contains('c-nac')
-  ){
-    // Desde este momento se respeta la excepción ingresada manualmente.
-    e.target.dataset.autocompletado = 'false';
-  }
+  document.querySelectorAll('.comp').forEach(comp => {
+    if (typeof comp.evaluarErgo === 'function') comp.evaluarErgo();
+  });
 });
 
 /* ---------- Dorsales y opciones ---------- */
@@ -1372,7 +1242,14 @@ document.addEventListener('click', e => {
   const contenedor = grupo.parentElement.querySelector('.contacto-hospedaje');
   if (contenedor){
     contenedor.classList.toggle('visible', valor === 'no');
-  }
+
+    if (valor !== 'no'){
+      const telefono = contenedor.querySelector('input[type="tel"]');
+      if (telefono){
+        telefono.value = '';
+        telefono.classList.remove('invalido');
+      }
+    }
   }
 });
 
@@ -1395,34 +1272,23 @@ function tarjetaCompetidor(i){
         <select class="c-sexo"><option value="">—</option><option>Masculino</option><option>Femenino</option></select></div>
       <div class="campo"><label>Edad</label><input type="number" class="c-edad" min="1" max="99" inputmode="numeric"></div>
     </div>
-    <div class="campo"><label>País / nacionalidad</label>
-        <input
-          type="text"
-          class="c-nac"
-          placeholder="País del competidor"
-          autocomplete="country-name"
-        >
-        
-      </div>
+    
     <div class="campo">
       <label>HOSPEDAJE DE LA ORGANIZACIÓN</label>
       <div class="opciones-si-no hospedaje-selector" role="radiogroup" aria-label="Hospedaje del competidor ${i}">
         <label class="opcion">
           <input type="radio" name="hospedajeComp${i}" value="organizacion">
           <span class="opcion-hospedaje-titulo">SÍ</span>
-          <span class="opcion-hospedaje-desc">Solicita hospedaje coordinado por la organización.</span>
         </label>
         <label class="opcion">
           <input type="radio" name="hospedajeComp${i}" value="no">
           <span class="opcion-hospedaje-titulo">NO</span>
-          <span class="opcion-hospedaje-desc">No solicita hospedaje de la organización.</span>
         </label>
       </div>
       <div class="contacto-hospedaje c-contacto-hospedaje">
-        <p>
-          El capitán de la delegación será contactado por la organización para coordinar
-          las opciones de alojamiento disponibles en las Termas del Arapey.
-        </p>
+        <p>La organización se pondrá en contacto con usted para coordinar las opciones de alojamiento disponibles. Los costos del alojamiento serán asumidos íntegramente por la propia persona.</p>
+        <label>Número de celular para coordinación</label>
+        <input type="tel" class="c-tel-hospedaje" inputmode="tel" placeholder="+598 9X XXX XXX">
       </div>
     </div>
     <div class="archivo">
@@ -1433,7 +1299,7 @@ function tarjetaCompetidor(i){
     </div>
     <div class="archivo ergometria">
       <div class="alerta-ergo">
-        ⚠ La ergometría es necesaria por ser mayor de 35 años y tener un país distinto de Uruguay.
+        ⚠ La ergometría es necesaria por ser mayor de 35 años y pertenecer a una delegación de un país distinto de Uruguay.
       </div>
       <div class="estado-ergo" role="radiogroup" aria-label="Estado de la ergometría">
         <label>
@@ -1459,7 +1325,6 @@ function tarjetaCompetidor(i){
     </div>`;
 
   const edad = div.querySelector('.c-edad');
-  const nac = div.querySelector('.c-nac');
   const bloqueErgo = div.querySelector('.ergometria');
   const archivoErgo = div.querySelector('.c-ergo');
   const zonaErgo = div.querySelector('.z-ergo');
@@ -1468,12 +1333,7 @@ function tarjetaCompetidor(i){
 
   function evaluarErgo(){
     const edadCompetidor = Number(edad.value || 0);
-    const paisCompetidor = normalizarPais(nac.value);
-
-    // Uruguay, URUGUAY, uruguay o cualquier combinación de mayúsculas
-    // y minúsculas se consideran el mismo país.
-    const esUruguay = paisCompetidor === 'uruguay';
-    const requiere = edadCompetidor > 35 && Boolean(paisCompetidor) && !esUruguay;
+    const requiere = edadCompetidor > 35 && delegacionEsExtranjera();
 
     bloqueErgo.classList.toggle('visible', requiere);
 
@@ -1484,7 +1344,6 @@ function tarjetaCompetidor(i){
       });
       bloqueCargaErgo.classList.remove('visible');
       bloqueTramiteErgo.classList.remove('visible');
-      // Si deja de corresponder, se limpia un archivo que se hubiera cargado.
       archivoErgo.value = '';
       zonaErgo.classList.remove('cargado', 'invalido');
       zonaErgo.querySelector('.txt').textContent = 'Subir archivo (PDF o imagen)';
@@ -1492,9 +1351,7 @@ function tarjetaCompetidor(i){
   }
 
   // Se recalcula inmediatamente al cambiar la edad o escribir el país.
-  edad.addEventListener('input', evaluarErgo);
   nac.addEventListener('input', evaluarErgo);
-  nac.addEventListener('change', evaluarErgo);
 
   // Permite que el país precargado desde la delegación también active la regla.
   div.evaluarErgo = evaluarErgo;
@@ -1544,34 +1401,12 @@ function normalizarPais(valor){
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-function esCompetidorExtranjero(paisCompetidor){
-  const paisPersona = normalizarPais(paisCompetidor);
-
-  // Para exigir ergometría, se considera extranjero a todo competidor
-  // cuyo país sea distinto de Uruguay, sin importar el país de la delegación.
-  return Boolean(paisPersona && paisPersona !== 'uruguay');
+function delegacionEsExtranjera(){
+  const paisDelegacion = normalizarPais($('paisInscripcion').value);
+  return Boolean(paisDelegacion && paisDelegacion !== 'uruguay');
 }
 
-function completarNacionalidadesDesdeDelegacion(forzar = false){
-  const paisDelegacion = $('paisInscripcion').value.trim();
 
-  document.querySelectorAll('.c-nac').forEach(input => {
-    const fueAutocompletado = input.dataset.autocompletado === 'true';
-    const estaVacio = !input.value.trim();
-
-    // Se completa automáticamente si:
-    // 1) el campo está vacío,
-    // 2) todavía conserva un valor autocompletado,
-    // 3) se solicita una actualización forzada.
-    if (forzar || estaVacio || fueAutocompletado){
-      input.value = paisDelegacion;
-      input.dataset.autocompletado = paisDelegacion ? 'true' : 'false';
-
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-}
 
 function renderComp(n, plan = planCompetidores()){
   const actual = listaComp.children.length;
@@ -1627,7 +1462,6 @@ function renderComp(n, plan = planCompetidores()){
   });
 
   $('valorComp').textContent = n;
-  completarNacionalidadesDesdeDelegacion();
 }
 renderComp(1);
 actualizarCompetidoresSegunModalidades();
@@ -1666,6 +1500,7 @@ function validarPaso(n){
     ok = marcar($('capNombre'), !$('capNombre').value.trim()) && ok;
     const em = $('capEmail');
     ok = marcar(em, !em.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) && ok;
+    ok = marcar($('capCel'), !$('capCel').value.trim()) && ok;
     const hospCap = document.querySelector('input[name="hospedajeCapitan"]:checked');
     const grupoHospCap = document.querySelector('input[name="hospedajeCapitan"]').closest('.hospedaje-selector');
     grupoHospCap.classList.toggle('invalido', !hospCap);
@@ -1701,10 +1536,13 @@ function validarPaso(n){
         +edad.value > 99;
 
       ok = marcar(edad, edadInvalida) && ok;
-      ok = marcar(c.querySelector('.c-nac'), !c.querySelector('.c-nac').value) && ok;
       const hospComp = c.querySelector('.hospedaje-selector input:checked');
       c.querySelector('.hospedaje-selector').classList.toggle('invalido', !hospComp);
       if (!hospComp) ok = false;
+
+      const telHosp = c.querySelector('.c-tel-hospedaje');
+      const requiereTelHosp = hospComp && hospComp.value === 'no';
+      ok = marcar(telHosp, requiereTelHosp && !telHosp.value.trim()) && ok;
       const zCarnet = c.querySelector('.z-carnet');
       const carnetOk = c.querySelector('.c-carnet').files.length > 0;
       zCarnet.classList.toggle('invalido', !carnetOk);
@@ -1772,13 +1610,14 @@ function generarFicha(d){
 
   h += '<div class="ficha-sec"><div class="ficha-titulo">Competidores (' + d.competidores.length + ')</div>' +
     '<div class="ficha-scroll"><table class="ficha-tabla">' +
-    '<tr><th class="num-col">N°</th><th>Modalidad</th><th>Nombre</th><th>Sexo</th><th>Edad</th><th>Nacionalidad</th><th>Hospedaje organización</th><th>Carnet</th><th>Ergometría</th></tr>';
+    '<tr><th class="num-col">N°</th><th>Modalidad</th><th>Nombre</th><th>Sexo</th><th>Edad</th><th>Nacionalidad</th><th>Hospedaje organización</th><th>Contacto</th><th>Carnet</th><th>Ergometría</th></tr>';
   d.competidores.forEach(c => {
     const requiereErgo = esCompetidorExtranjero(c.nacionalidad) && c.edad > 35;
     h += '<tr><td class="num-col">' + c.numero + '</td><td>' + esc(c.modalidad) + '</td><td>' + esc(c.nombre) + '</td><td>' + esc(c.sexo) +
       '</td><td>' + c.edad + '</td><td>' +
-      esc(c.nacionalidad) + '</td><td>' +
+      esc(d.pais) + '</td><td>' +
       (c.hospedaje === 'organizacion' ? 'SÍ' : 'NO') + '</td><td>' +
+      (c.hospedaje === 'no' ? esc(c.telefonoHospedaje) : '—') + '</td><td>' +
       (c.carnetSalud ? 'Presentado' : '—') + '</td><td>' +
       (c.ergometria ? 'Presentada' : (c.ergometriaEstado === 'tramite' ? 'EN TRÁMITE — enviar antes del 03/10/2026' : (requiereErgo ? 'Pendiente de definir' : 'No requiere'))) + '</td></tr>';
   });
@@ -1803,8 +1642,9 @@ async function enviarInscripcionDefinitiva() {
       nombre: c.querySelector('.c-nombre').value.trim(),
       sexo: c.querySelector('.c-sexo').value,
       edad: +c.querySelector('.c-edad').value,
-      nacionalidad: c.querySelector('.c-nac').value,
+      nacionalidad: $('paisInscripcion').value.trim(),
       hospedaje: c.querySelector('.hospedaje-selector input:checked').value,
+      telefonoHospedaje: c.querySelector('.c-tel-hospedaje').value.trim(),
       carnetSalud: await leerArchivo(c.querySelector('.c-carnet')),
       ergometriaEstado: c.querySelector('.ergometria').classList.contains('visible')
         ? (c.querySelector('.c-ergo-estado:checked')?.value || '') : 'no_requiere',
@@ -1884,7 +1724,6 @@ $('btnVolverAviso').addEventListener('click', () => {
   document.body.style.overflow = '';
 });
 
-$('btnEnvioDefinitivo').addEventListener('click', enviarInscripcionDefinitiva);
 </script>
 </body>
 </html>
