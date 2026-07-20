@@ -1658,35 +1658,164 @@ function generarFicha(d){
 }
 
 /* ---------- Envío ---------- */
+function crearRequestId(){
+  if (window.crypto && typeof window.crypto.randomUUID === 'function'){
+    return window.crypto.randomUUID();
+  }
+
+  return (
+    Date.now().toString(36) + '-' +
+    Math.random().toString(36).slice(2) + '-' +
+    Math.random().toString(36).slice(2)
+  );
+}
+
+function consultarEstadoAppsScript(requestId, timeoutMs = 120000){
+  return new Promise((resolve, reject) => {
+    const inicio = Date.now();
+    let intento = 0;
+
+    function consultar(){
+      intento += 1;
+
+      const callback = '__estadoInscripcion_' +
+        requestId.replace(/[^a-zA-Z0-9_]/g, '') +
+        '_' + intento;
+
+      const script = document.createElement('script');
+      const separador = SCRIPT_URL.includes('?') ? '&' : '?';
+      let resuelto = false;
+
+      function limpiar(){
+        try { delete window[callback]; } catch (e) { window[callback] = undefined; }
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[callback] = function(resultado){
+        resuelto = true;
+        limpiar();
+
+        if (resultado && resultado.ok === true){
+          resolve(resultado);
+          return;
+        }
+
+        if (resultado && resultado.pendiente === false && resultado.error){
+          reject(new Error(resultado.error));
+          return;
+        }
+
+        if (Date.now() - inicio >= timeoutMs){
+          reject(new Error(
+            'El servidor no confirmó la inscripción dentro del tiempo esperado.'
+          ));
+          return;
+        }
+
+        setTimeout(consultar, 1500);
+      };
+
+      script.onerror = function(){
+        if (resuelto) return;
+        limpiar();
+
+        if (Date.now() - inicio >= timeoutMs){
+          reject(new Error(
+            'No fue posible consultar la confirmación del servidor.'
+          ));
+          return;
+        }
+
+        setTimeout(consultar, 1800);
+      };
+
+      script.src =
+        SCRIPT_URL +
+        separador +
+        'requestId=' + encodeURIComponent(requestId) +
+        '&callback=' + encodeURIComponent(callback) +
+        '&_=' + Date.now();
+
+      document.head.appendChild(script);
+    }
+
+    consultar();
+  });
+}
+
 async function enviarInscripcionDefinitiva() {
   const btn = $('btnEnviar');
   btn.disabled = true;
   btn.textContent = 'ENVIANDO…';
 
-  try {
-    const competidores = await Promise.all([...listaComp.children].map(async (c, i) => ({
-      numero: i + 1,
-      modalidad: c.dataset.modalidad || '',
-      mayor50: c.dataset.mayor50 === 'true',
-      nombre: c.querySelector('.c-nombre').value.trim(),
-      sexo: c.querySelector('.c-sexo').value,
-      edad: +c.querySelector('.c-edad').value,
-      nacionalidad: $('paisInscripcion').value.trim(),
-      hospedaje: c.querySelector('.hospedaje-selector input:checked').value,
-      telefonoHospedaje: c.querySelector('.c-tel-hospedaje').value.trim(),
-      carnetSalud: await leerArchivo(c.querySelector('.c-carnet')),
-      ergometriaEstado: c.querySelector('.ergometria').classList.contains('visible')
-        ? (c.querySelector('.c-ergo-estado:checked')?.value || '') : 'no_requiere',
-      ergometria: c.querySelector('.ergometria').classList.contains('visible') &&
-        c.querySelector('.c-ergo-estado:checked')?.value === 'adjunta'
-        ? await leerArchivo(c.querySelector('.c-ergo')) : null
-    })));
+  const requestId = crearRequestId();
+  let datos;
 
+  try {
+    const competidores = await Promise.all(
+      [...listaComp.children].map(async (c, i) => {
+        const hospedaje = c.querySelector('.hospedaje-selector input:checked');
+        const carnetInput = c.querySelector('.c-carnet');
+        const requiereErgo = c.querySelector('.ergometria').classList.contains('visible');
+        const estadoErgo = c.querySelector('.c-ergo-estado:checked');
+        const ergoInput = c.querySelector('.c-ergo');
+
+        if (!hospedaje) {
+          throw new Error(
+            'Falta seleccionar el hospedaje del competidor ' + (i + 1) + '.'
+          );
+        }
+
+        if (!carnetInput || !carnetInput.files || !carnetInput.files.length) {
+          throw new Error(
+            'Falta adjuntar el carné de salud del competidor ' + (i + 1) + '.'
+          );
+        }
+
+        if (requiereErgo && !estadoErgo) {
+          throw new Error(
+            'Falta indicar si la ergometría del competidor ' + (i + 1) +
+            ' se adjunta ahora o está en trámite.'
+          );
+        }
+
+        if (
+          requiereErgo &&
+          estadoErgo.value === 'adjunta' &&
+          (!ergoInput || !ergoInput.files || !ergoInput.files.length)
+        ) {
+          throw new Error(
+            'Seleccionaste “Adjuntar ahora” para el competidor ' + (i + 1) +
+            ', pero falta el archivo.'
+          );
+        }
+
+        return {
+          numero: i + 1,
+          modalidad: c.dataset.modalidad || '',
+          mayor50: c.dataset.mayor50 === 'true',
+          nombre: c.querySelector('.c-nombre').value.trim(),
+          sexo: c.querySelector('.c-sexo').value,
+          edad: Number(c.querySelector('.c-edad').value),
+          nacionalidad: $('paisInscripcion').value.trim(),
+          hospedaje: hospedaje.value,
+          telefonoHospedaje:
+            c.querySelector('.c-tel-hospedaje')?.value.trim() || '',
+          carnetSalud: await leerArchivo(carnetInput),
+          ergometriaEstado:
+            requiereErgo ? estadoErgo.value : 'no_requiere',
+          ergometria:
+            requiereErgo && estadoErgo.value === 'adjunta'
+              ? await leerArchivo(ergoInput)
+              : null
+        };
+      })
+    );
 
     const modalidadesSeleccionadas = modalidadesParaEnvio();
 
-    const datos = {
-      // Se conserva "categoria" como texto para compatibilidad con el Apps Script actual.
+    datos = {
+      requestId: requestId,
       categoria: modalidadesSeleccionadas.join(', '),
       categorias: modalidadesSeleccionadas,
       modalidadMayor50: tipoMayor50Seleccionado(),
@@ -1696,37 +1825,114 @@ async function enviarInscripcionDefinitiva() {
         nombre: $('capNombre').value.trim(),
         email: $('capEmail').value.trim(),
         celular: $('capCel').value.trim(),
-        hospedaje: document.querySelector('input[name="hospedajeCapitan"]:checked').value
+        hospedaje:
+          document.querySelector(
+            'input[name="hospedajeCapitan"]:checked'
+          ).value
       },
       cantidadCompetidores: competidores.length,
-      competidores,
+      competidores: competidores,
       fecha: new Date().toISOString()
     };
 
-    if (SCRIPT_URL){
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(datos)
-      });
-    } else {
-      await new Promise(r => setTimeout(r, 900));
-      console.log('MODO DEMO — datos que se enviarían:', datos);
-    }
-
-    $('catConfirmada').textContent = datos.categoria;
-    $('cantConfirmada').textContent = datos.cantidadCompetidores + (datos.cantidadCompetidores === 1 ? ' competidor' : ' competidores');
-    $('mailConfirmado').textContent = datos.capitan.email;
-    generarFicha(datos);
-    $('formulario').style.display = 'none';
-    document.querySelector('.stepper').style.display = 'none';
-    $('confirmacion').classList.add('visible');
-    try { window.scrollTo(0, 0); } catch(e) {}
-  } catch (e){
-    mostrarMsj('No pudimos enviar la inscripción. Verificá tu conexión e intentá de nuevo.', 'err');
+  } catch (errorDatos) {
+    mostrarMsj(
+      'No pudimos preparar la inscripción: ' +
+      (errorDatos.message || String(errorDatos)),
+      'err'
+    );
     btn.disabled = false;
     btn.textContent = 'ENVIAR INSCRIPCIÓN';
+    return;
+  }
+
+  try {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-store',
+      credentials: 'omit',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(datos)
+    }).catch(function(error){
+      console.warn('El navegador no pudo leer la respuesta del POST:', error);
+    });
+
+    btn.textContent = 'CONFIRMANDO…';
+
+    const resultado = await consultarEstadoAppsScript(requestId);
+
+    if (!resultado || resultado.ok !== true){
+      throw new Error(
+        resultado && resultado.error
+          ? resultado.error
+          : 'Apps Script no confirmó la inscripción.'
+      );
+    }
+
+    if ($('catConfirmada')) {
+      $('catConfirmada').textContent = datos.categoria;
+    }
+
+    if ($('cantConfirmada')) {
+      $('cantConfirmada').textContent =
+        datos.cantidadCompetidores +
+        (datos.cantidadCompetidores === 1
+          ? ' competidor'
+          : ' competidores');
+    }
+
+    if ($('mailConfirmado')) {
+      $('mailConfirmado').textContent = datos.capitan.email;
+    }
+
+    try {
+      generarFicha(datos);
+    } catch (errorFicha) {
+      console.warn('No se pudo generar la ficha visual:', errorFicha);
+
+      if ($('ficha')) {
+        $('ficha').innerHTML =
+          '<div class="ficha-nota">' +
+          'La inscripción ' + String(resultado.id || '') +
+          ' fue registrada correctamente. ' +
+          'La ficha oficial será enviada por correo electrónico.' +
+          '</div>';
+      }
+    }
+
+    if ($('formulario')) {
+      $('formulario').style.display = 'none';
+    }
+
+    const stepper = document.querySelector('.stepper');
+    if (stepper) {
+      stepper.style.display = 'none';
+    }
+
+    if ($('confirmacion')) {
+      $('confirmacion').classList.add('visible');
+      $('confirmacion').style.display = 'block';
+    }
+
+    btn.textContent = 'INSCRIPCIÓN CONFIRMADA';
+
+    try { window.scrollTo(0, 0); } catch (e) {}
+
+  } catch (errorEnvio) {
+    console.error(errorEnvio);
+
+    mostrarMsj(
+      'La inscripción no fue confirmada por el servidor: ' +
+      (errorEnvio.message || String(errorEnvio)) +
+      ' No vuelvas a enviar hasta verificar que no hayas recibido el correo.',
+      'err'
+    );
+
+    btn.disabled = false;
+    btn.textContent = 'REINTENTAR';
   }
 }
 
