@@ -640,6 +640,73 @@
     .comp-modalidad{width:100%;margin-left:50px;text-align:left}
   }
 
+
+  /* ---------- DESCARGA DEL REGLAMENTO ---------- */
+  .reglamento-info{
+    margin:18px auto 0;
+    max-width:620px;
+    padding:22px;
+    background:rgba(212,169,78,.08);
+    border:1px solid var(--linea);
+    border-left:5px solid var(--dorado);
+    text-align:center;
+  }
+  .reglamento-icono{
+    width:52px;
+    height:52px;
+    margin:0 auto 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--dorado);
+    color:var(--carbon);
+    font-family:'Staatliches',sans-serif;
+    font-size:1.05rem;
+    letter-spacing:.05em;
+    box-shadow:0 0 0 5px rgba(212,169,78,.12);
+  }
+  .reglamento-info h3{
+    margin:0 0 8px;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.45rem;
+    font-weight:400;
+    letter-spacing:.1em;
+    color:var(--dorado-suave);
+  }
+  #confirmacion .reglamento-info p{
+    max-width:540px;
+    margin:0 auto 10px;
+    color:var(--crema);
+  }
+  .btn-reglamento{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    margin-top:8px;
+    padding:14px 22px;
+    background:linear-gradient(160deg,var(--dorado),#a97c25);
+    color:var(--carbon);
+    border:1px solid var(--dorado-suave);
+    text-decoration:none;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.08rem;
+    letter-spacing:.1em;
+    transition:transform .15s ease,filter .15s ease;
+  }
+  .btn-reglamento:hover{
+    filter:brightness(1.08);
+    transform:translateY(-1px);
+  }
+  .btn-reglamento:focus-visible{
+    outline:2px solid var(--crema);
+    outline-offset:3px;
+  }
+  @media(max-width:560px){
+    .reglamento-info{padding:18px 14px}
+    .btn-reglamento{width:100%;font-size:.98rem}
+  }
+
 </style>
 </head>
 <body>
@@ -906,6 +973,26 @@
           rel="noopener noreferrer"
         >
           UNIRME AL GRUPO DE WHATSAPP
+        </a>
+      </section>
+
+
+      <!-- REGLAMENTO OFICIAL -->
+      <section class="reglamento-info" aria-labelledby="tituloReglamento">
+        <div class="reglamento-icono" aria-hidden="true">PDF</div>
+        <h3 id="tituloReglamento">REGLAMENTO DE LA COMPETENCIA</h3>
+        <p>
+          Descargue y conserve el Reglamento Oficial de la Copa Integración DNB 2026.
+          Es responsabilidad de la delegación conocer las condiciones, modalidades y disposiciones del evento.
+        </p>
+        <a
+          class="btn-reglamento"
+          href="Reglamento-Copa-Integracion-2026.pdf"
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          DESCARGAR REGLAMENTO EN PDF
         </a>
       </section>
 
