@@ -742,6 +742,65 @@
     z-index:1;
   }
 
+
+  /* ---------- ACEPTACIÓN OBLIGATORIA DEL CAPITÁN ---------- */
+  .capitan-info-box{
+    margin-bottom:24px;
+    padding:20px;
+    background:rgba(212,169,78,.08);
+    border:1px solid var(--linea);
+    border-left:5px solid var(--dorado);
+  }
+
+  .capitan-info-box p{
+    margin:0 0 16px;
+    color:var(--crema);
+    font-size:.9rem;
+    line-height:1.65;
+  }
+
+  .aceptacion-capitan{
+    display:flex;
+    align-items:flex-start;
+    gap:11px;
+    margin:0;
+    padding:13px 14px;
+    cursor:pointer;
+    background:var(--carbon);
+    border:1px solid var(--linea);
+    color:var(--dorado-suave);
+    font-size:.84rem;
+    line-height:1.45;
+    text-transform:none;
+    letter-spacing:0;
+    transition:border-color .15s ease,background .15s ease;
+  }
+
+  .aceptacion-capitan:hover{
+    border-color:var(--dorado);
+  }
+
+  .aceptacion-capitan input{
+    width:19px;
+    height:19px;
+    margin-top:1px;
+    flex:none;
+    accent-color:var(--dorado);
+    cursor:pointer;
+  }
+
+  .aceptacion-capitan.aceptado{
+    border-color:var(--ok);
+    background:rgba(76,175,125,.08);
+    color:#9ce9b9;
+  }
+
+  .aceptacion-capitan.invalido{
+    border-color:var(--err)!important;
+    background:rgba(224,82,82,.08);
+    color:#f09a9a;
+  }
+
 </style>
 </head>
 <body>
@@ -827,7 +886,23 @@
       <!-- PASO 2: CAPITÁN -->
       <section class="paso" data-paso="2">
         <div class="paso-titulo">Datos del capitán</div>
-        <p class="paso-ayuda">El capitán es el responsable de la inscripción. Todos los campos son obligatorios.</p>
+
+        <div class="capitan-info-box">
+          <p>
+            El capitán es el responsable de la inscripción y de la coordinación del equipo o competidor.
+            Su designación es obligatoria en todas las modalidades de participación (individual y por equipos).
+            El capitán debe ser una persona distinta a quien compite, por lo que no podrá figurar simultáneamente
+            como competidor. Todos los campos solicitados son de carácter obligatorio y deberán completarse
+            correctamente para que la inscripción sea válida.
+          </p>
+
+          <label class="aceptacion-capitan" id="aceptacionCapitanBox">
+            <input type="checkbox" id="aceptoCondicionesCapitan">
+            <span>
+              He leído, comprendido y acepto las condiciones indicadas sobre la designación y responsabilidad del capitán.
+            </span>
+          </label>
+        </div>
 
         <div class="procedencia-box">
           <div class="procedencia-titulo">Procedencia de la delegación</div>
@@ -1025,6 +1100,23 @@ function mostrarMsj(texto, tipo){
   m.textContent = texto || '';
   m.className = tipo || '';
   m.style.display = texto ? 'block' : 'none';
+}
+
+
+const aceptoCondicionesCapitan = $('aceptoCondicionesCapitan');
+if (aceptoCondicionesCapitan) {
+  aceptoCondicionesCapitan.addEventListener('change', function(){
+    const caja = $('aceptacionCapitanBox');
+    if (!caja) return;
+
+    caja.classList.toggle('aceptado', this.checked);
+    caja.classList.remove('invalido');
+
+    if (this.checked && $('msj')) {
+      $('msj').className = '';
+      $('msj').style.display = 'none';
+    }
+  });
 }
 
 /* ---------- Reglas de cantidad por modalidad ---------- */
@@ -1524,6 +1616,23 @@ function validarPaso(n){
   }
   if (n === 2){
     let ok = true;
+
+    const aceptoCapitan = $('aceptoCondicionesCapitan');
+    const aceptacionBox = $('aceptacionCapitanBox');
+    const aceptacionInvalida = !aceptoCapitan || !aceptoCapitan.checked;
+
+    if (aceptacionBox) {
+      aceptacionBox.classList.toggle('invalido', aceptacionInvalida);
+      aceptacionBox.classList.toggle(
+        'aceptado',
+        Boolean(aceptoCapitan && aceptoCapitan.checked)
+      );
+    }
+
+    if (aceptacionInvalida) {
+      ok = false;
+    }
+
     ok = marcar($('cuerpoBomberos'), !$('cuerpoBomberos').value.trim()) && ok;
     ok = marcar($('paisInscripcion'), !$('paisInscripcion').value.trim()) && ok;
     ok = marcar($('capNombre'), !$('capNombre').value.trim()) && ok;
@@ -1534,7 +1643,14 @@ function validarPaso(n){
     const grupoHospCap = document.querySelector('input[name="hospedajeCapitan"]').closest('.hospedaje-selector');
     grupoHospCap.classList.toggle('invalido', !hospCap);
     if (!hospCap) ok = false;
-    if (!ok) mostrarMsj('Completá el país, el cuerpo de bomberos, todos los datos del capitán y su hospedaje.', 'err');
+    if (!ok) {
+      mostrarMsj(
+        aceptacionInvalida
+          ? 'Debés leer y aceptar las condiciones del capitán para continuar.'
+          : 'Completá el país, el cuerpo de bomberos, todos los datos del capitán y su hospedaje.',
+        'err'
+      );
+    }
     return ok;
   }
   if (n === 3){
