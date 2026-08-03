@@ -801,6 +801,41 @@
     color:#f09a9a;
   }
 
+
+  /* ---------- INSCRIPCIÓN INDIVIDUAL SIN CAPITÁN ---------- */
+  .contacto-individual{
+    display:none;
+    margin-bottom:22px;
+    padding:18px;
+    background:rgba(76,175,125,.07);
+    border:1px solid rgba(76,175,125,.35);
+    border-left:4px solid var(--ok);
+  }
+
+  .contacto-individual.visible{
+    display:block;
+    animation:aparecer .2s ease;
+  }
+
+  .contacto-individual-titulo{
+    margin-bottom:7px;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.08rem;
+    letter-spacing:.1em;
+    color:#9ce9b9;
+  }
+
+  .contacto-individual-nota{
+    margin-bottom:15px;
+    color:var(--humo);
+    font-size:.82rem;
+    line-height:1.5;
+  }
+
+  .paso-tab.omitido{
+    display:none;
+  }
+
 </style>
 </head>
 <body>
@@ -981,6 +1016,62 @@
           <strong>Grupal +50</strong> exigirán una edad mínima de 50 años; esto no afectará a
           los competidores inscriptos en las demás modalidades.
         </p>
+
+        <div id="contactoIndividualSinCapitan" class="contacto-individual">
+          <div class="contacto-individual-titulo">DATOS DE LA INSCRIPCIÓN INDIVIDUAL</div>
+          <p class="contacto-individual-nota">
+            Como seleccionaste únicamente una modalidad individual, no es necesario designar capitán.
+            Completá la procedencia y los datos de contacto del competidor para recibir la confirmación.
+          </p>
+
+          <div class="fila">
+            <div class="campo">
+              <label for="cuerpoBomberosIndividual">Cuerpo de Bomberos</label>
+              <input
+                type="text"
+                id="cuerpoBomberosIndividual"
+                placeholder="Ej.: Destacamento, Unidad"
+                autocomplete="organization"
+              >
+            </div>
+
+            <div class="campo">
+              <label for="paisInscripcionIndividual">País</label>
+              <input
+                type="text"
+                id="paisInscripcionIndividual"
+                placeholder="Ej.: Uruguay"
+                autocomplete="country-name"
+              >
+            </div>
+          </div>
+
+          <div class="fila">
+            <div class="campo">
+              <label for="emailCompetidorIndividual">
+                Correo electrónico
+                <span style="text-transform:none;letter-spacing:0">(para recibir la confirmación)</span>
+              </label>
+              <input
+                type="email"
+                id="emailCompetidorIndividual"
+                autocomplete="email"
+              >
+            </div>
+
+            <div class="campo">
+              <label for="telefonoCompetidorIndividual">Número de teléfono celular</label>
+              <input
+                type="tel"
+                id="telefonoCompetidorIndividual"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="+598 9X XXX XXX"
+              >
+            </div>
+          </div>
+        </div>
+
         <div class="contador-automatico" aria-label="Cantidad obligatoria de competidores">
           <div class="valor" id="valorComp">1</div>
           <p>Cantidad obligatoria de competidores según las modalidades seleccionadas.</p>
@@ -1087,13 +1178,29 @@ function irAPaso(n){
 }
 function avanzarSeguro(){
   try {
-    if (validarPaso(pasoActual)) irAPaso(Math.min(3, pasoActual + 1));
+    if (!validarPaso(pasoActual)) return;
+
+    if (pasoActual === 1 && esInscripcionIndividualSinCapitan()) {
+      actualizarFlujoCapitan();
+      irAPaso(3);
+      return;
+    }
+
+    irAPaso(Math.min(3, pasoActual + 1));
   } catch (error) {
     console.error(error);
     mostrarMsj('Ocurrió un error al avanzar. Volvé a seleccionar la opción e intentá nuevamente.', 'err');
   }
 }
-function retrocederSeguro(){ irAPaso(Math.max(1, pasoActual - 1)); }
+
+function retrocederSeguro(){
+  if (pasoActual === 3 && esInscripcionIndividualSinCapitan()) {
+    irAPaso(1);
+    return;
+  }
+
+  irAPaso(Math.max(1, pasoActual - 1));
+}
 
 function mostrarMsj(texto, tipo){
   const m = $('msj');
@@ -1159,6 +1266,49 @@ function modalidadesParaEnvio(){
   if (mayor50Activo() && tipo50) modalidades.push(tipo50);
 
   return modalidades;
+}
+
+
+const MODALIDADES_INDIVIDUALES_SIN_CAPITAN = new Set([
+  'INDIVIDUAL MASCULINO',
+  'INDIVIDUAL FEMENINO',
+  'INDIVIDUAL MASCULINO +50',
+  'INDIVIDUAL FEMENINO +50'
+]);
+
+function esInscripcionIndividualSinCapitan(){
+  const modalidades = modalidadesParaEnvio();
+
+  return (
+    modalidades.length === 1 &&
+    MODALIDADES_INDIVIDUALES_SIN_CAPITAN.has(modalidades[0])
+  );
+}
+
+function paisDelegacionActual(){
+  return esInscripcionIndividualSinCapitan()
+    ? $('paisInscripcionIndividual').value.trim()
+    : $('paisInscripcion').value.trim();
+}
+
+function cuerpoBomberosActual(){
+  return esInscripcionIndividualSinCapitan()
+    ? $('cuerpoBomberosIndividual').value.trim()
+    : $('cuerpoBomberos').value.trim();
+}
+
+function actualizarFlujoCapitan(){
+  const sinCapitan = esInscripcionIndividualSinCapitan();
+  const tabCapitan = document.querySelector('.paso-tab[data-tab="2"]');
+  const bloqueIndividual = $('contactoIndividualSinCapitan');
+
+  if (tabCapitan) {
+    tabCapitan.classList.toggle('omitido', sinCapitan);
+  }
+
+  if (bloqueIndividual) {
+    bloqueIndividual.classList.toggle('visible', sinCapitan);
+  }
 }
 
 function planCompetidores(){
@@ -1282,11 +1432,14 @@ document.querySelectorAll('input[name="modalidadMayor50"]').forEach(radio => {
   detalle.textContent = partes.join(' · ') + ` · Total obligatorio: ${requerida}`;
 }
 
-$('paisInscripcion').addEventListener('input', () => {
+function reevaluarErgometrias(){
   document.querySelectorAll('.comp').forEach(comp => {
     if (typeof comp.evaluarErgo === 'function') comp.evaluarErgo();
   });
-});
+}
+
+$('paisInscripcion').addEventListener('input', reevaluarErgometrias);
+$('paisInscripcionIndividual').addEventListener('input', reevaluarErgometrias);
 
 /* ---------- Dorsales y opciones ---------- */
 function actualizarEstadoVisualModalidades(){
@@ -1324,6 +1477,7 @@ function alternarModalidadDirecta(tarjeta, evento){
   // Después se recalculan los competidores. Un error aquí no desmarca la opción.
   try {
     actualizarCompetidoresSegunModalidades();
+    actualizarFlujoCapitan();
     mostrarMsj('', '');
   } catch (error) {
     console.error('Error al actualizar competidores:', error);
@@ -1345,6 +1499,7 @@ document.querySelectorAll('input[name="modalidadMayor50"]').forEach(radio => {
     document.querySelectorAll('.opcion-mayor50').forEach(opcion => opcion.classList.remove('activo'));
     this.closest('.opcion-mayor50').classList.add('activo');
     actualizarCompetidoresSegunModalidades();
+    actualizarFlujoCapitan();
     mostrarMsj('', '');
   });
 });
@@ -1523,7 +1678,7 @@ function normalizarPais(valor){
 }
 
 function delegacionEsExtranjera(){
-  const paisDelegacion = normalizarPais($('paisInscripcion').value);
+  const paisDelegacion = normalizarPais(paisDelegacionActual());
   return Boolean(paisDelegacion && paisDelegacion !== 'uruguay');
 }
 
@@ -1586,6 +1741,7 @@ function renderComp(n, plan = planCompetidores()){
 }
 renderComp(1);
 actualizarCompetidoresSegunModalidades();
+actualizarFlujoCapitan();
 
 /* ---------- Validación por paso ---------- */
 function marcar(el, malo){ el.classList.toggle('invalido', malo); return !malo; }
@@ -1656,6 +1812,42 @@ function validarPaso(n){
   if (n === 3){
     let ok = true;
     const requerida = cantidadRequeridaPorModalidades();
+
+    if (esInscripcionIndividualSinCapitan()) {
+      const cuerpoIndividual = $('cuerpoBomberosIndividual');
+      const paisIndividual = $('paisInscripcionIndividual');
+      const emailIndividual = $('emailCompetidorIndividual');
+      const telefonoIndividual = $('telefonoCompetidorIndividual');
+
+      ok = marcar(
+        cuerpoIndividual,
+        !cuerpoIndividual.value.trim()
+      ) && ok;
+
+      ok = marcar(
+        paisIndividual,
+        !paisIndividual.value.trim()
+      ) && ok;
+
+      ok = marcar(
+        emailIndividual,
+        !emailIndividual.value.trim() ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailIndividual.value)
+      ) && ok;
+
+      ok = marcar(
+        telefonoIndividual,
+        !telefonoIndividual.value.trim()
+      ) && ok;
+
+      if (!ok) {
+        mostrarMsj(
+          'Completá la procedencia, el correo y el teléfono del competidor individual.',
+          'err'
+        );
+        return false;
+      }
+    }
 
     if (!requerida || listaComp.children.length !== requerida){
       mostrarMsj(
@@ -1745,13 +1937,23 @@ function generarFicha(d){
     '<tr><td class="et">País</td><td>' + esc(d.pais) + '</td></tr>' +
     '</table></div>';
 
-  h += '<div class="ficha-sec"><div class="ficha-titulo">Datos del capitán</div>' +
-    '<table class="ficha-tabla">' +
-    '<tr><td class="et">Nombre y apellido</td><td>' + esc(d.capitan.nombre) + '</td></tr>' +
-
-    '<tr><td class="et">Correo</td><td>' + esc(d.capitan.email) + '</td></tr>' +
-    '<tr><td class="et">Hospedaje de la organización</td><td>' + (d.capitan.hospedaje === 'organizacion' ? 'SÍ' : 'NO') + '</td></tr>' +
-    '</table></div>';
+  if (d.sinCapitan) {
+    h += '<div class="ficha-sec"><div class="ficha-titulo">Contacto de la inscripción individual</div>' +
+      '<table class="ficha-tabla">' +
+      '<tr><td class="et">Capitán</td><td>NO APLICA — MODALIDAD INDIVIDUAL</td></tr>' +
+      '<tr><td class="et">Correo del competidor</td><td>' + esc(d.capitan.email) + '</td></tr>' +
+      '<tr><td class="et">Teléfono del competidor</td><td>' + esc(d.capitan.celular) + '</td></tr>' +
+      '</table></div>';
+  } else {
+    h += '<div class="ficha-sec"><div class="ficha-titulo">Datos del capitán</div>' +
+      '<table class="ficha-tabla">' +
+      '<tr><td class="et">Nombre y apellido</td><td>' + esc(d.capitan.nombre) + '</td></tr>' +
+      '<tr><td class="et">Correo</td><td>' + esc(d.capitan.email) + '</td></tr>' +
+      '<tr><td class="et">Hospedaje de la organización</td><td>' +
+      (d.capitan.hospedaje === 'organizacion' ? 'SÍ' : 'NO') +
+      '</td></tr>' +
+      '</table></div>';
+  }
 
   h += '<div class="ficha-sec"><div class="ficha-titulo">Competidores (' + d.competidores.length + ')</div>' +
     '<div class="ficha-scroll"><table class="ficha-tabla">' +
@@ -1950,7 +2152,7 @@ async function enviarInscripcionDefinitiva() {
           nombre: c.querySelector('.c-nombre').value.trim(),
           sexo: c.querySelector('.c-sexo').value,
           edad: Number(c.querySelector('.c-edad').value),
-          nacionalidad: $('paisInscripcion').value.trim(),
+          nacionalidad: paisDelegacionActual(),
           hospedaje: hospedaje.value,
           telefonoHospedaje:
             c.querySelector('.c-tel-hospedaje')?.value.trim() || '',
@@ -1972,17 +2174,30 @@ async function enviarInscripcionDefinitiva() {
       categoria: modalidadesSeleccionadas.join(', '),
       categorias: modalidadesSeleccionadas,
       modalidadMayor50: tipoMayor50Seleccionado(),
-      cuerpoBomberos: $('cuerpoBomberos').value.trim(),
-      pais: $('paisInscripcion').value.trim(),
-      capitan: {
-        nombre: $('capNombre').value.trim(),
-        email: $('capEmail').value.trim(),
-        celular: $('capCel').value.trim(),
-        hospedaje:
-          document.querySelector(
-            'input[name="hospedajeCapitan"]:checked'
-          ).value
-      },
+      cuerpoBomberos: cuerpoBomberosActual(),
+      pais: paisDelegacionActual(),
+      sinCapitan: esInscripcionIndividualSinCapitan(),
+      capitan: esInscripcionIndividualSinCapitan()
+        ? {
+            nombre: 'NO APLICA — MODALIDAD INDIVIDUAL',
+            email: $('emailCompetidorIndividual').value.trim(),
+            celular: $('telefonoCompetidorIndividual').value.trim(),
+            hospedaje:
+              competidores[0] && competidores[0].hospedaje
+                ? competidores[0].hospedaje
+                : 'no',
+            noAplica: true
+          }
+        : {
+            nombre: $('capNombre').value.trim(),
+            email: $('capEmail').value.trim(),
+            celular: $('capCel').value.trim(),
+            hospedaje:
+              document.querySelector(
+                'input[name="hospedajeCapitan"]:checked'
+              ).value,
+            noAplica: false
+          },
       cantidadCompetidores: competidores.length,
       competidores: competidores,
       fecha: new Date().toISOString()
