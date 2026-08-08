@@ -836,6 +836,145 @@
     display:none;
   }
 
+
+  /* ---------- CIERRE AUTOMÁTICO DE INSCRIPCIONES ---------- */
+  #inscripcionesCerradas{
+    display:none;
+    margin:0 0 28px;
+    padding:34px clamp(20px,5vw,46px);
+    text-align:center;
+    background:
+      linear-gradient(160deg,rgba(142,27,32,.98),rgba(91,14,18,.98));
+    border:1px solid var(--dorado);
+    border-top:5px solid var(--dorado);
+    box-shadow:0 18px 55px rgba(0,0,0,.28);
+  }
+
+  #inscripcionesCerradas.visible{
+    display:block;
+    animation:aparecer .3s ease;
+  }
+
+  #inscripcionesCerradas .cierre-icono{
+    width:68px;
+    height:68px;
+    margin:0 auto 18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid var(--dorado);
+    border-radius:50%;
+    color:var(--dorado-suave);
+    font-size:1.9rem;
+    background:rgba(22,17,14,.35);
+  }
+
+  #inscripcionesCerradas h2{
+    margin:0 0 10px;
+    font-family:'Staatliches',sans-serif;
+    font-size:clamp(2rem,6vw,3.3rem);
+    font-weight:400;
+    letter-spacing:.08em;
+    color:#fff;
+  }
+
+  #inscripcionesCerradas p{
+    max-width:650px;
+    margin:0 auto;
+    color:#f3eadb;
+    font-size:1rem;
+    line-height:1.6;
+  }
+
+  #inscripcionesCerradas .fecha-cierre{
+    display:inline-block;
+    margin-top:18px;
+    padding:8px 14px;
+    border:1px solid rgba(212,169,78,.5);
+    background:rgba(22,17,14,.28);
+    color:var(--dorado-suave);
+    font-family:'Staatliches',sans-serif;
+    letter-spacing:.08em;
+  }
+
+  body.inscripciones-cerradas .stepper,
+  body.inscripciones-cerradas main.card{
+    display:none!important;
+  }
+
+
+  /* ---------- CONTADOR REGRESIVO DE INSCRIPCIONES ---------- */
+  #contadorCierre{
+    margin:0 0 24px;
+    padding:20px clamp(16px,4vw,28px);
+    background:rgba(212,169,78,.07);
+    border:1px solid var(--linea);
+    border-left:5px solid var(--dorado);
+    text-align:center;
+  }
+
+  #contadorCierre.oculto{
+    display:none!important;
+  }
+
+  #contadorCierre .contador-cierre-titulo{
+    margin-bottom:12px;
+    font-family:'Staatliches',sans-serif;
+    font-size:1.15rem;
+    letter-spacing:.12em;
+    color:var(--dorado-suave);
+  }
+
+  #contadorCierre .contador-cierre-grid{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  #contadorCierre .contador-bloque{
+    min-width:92px;
+    padding:12px 10px 10px;
+    background:var(--carbon);
+    border:1px solid var(--linea);
+  }
+
+  #contadorCierre .contador-numero{
+    display:block;
+    font-family:'Staatliches',sans-serif;
+    font-size:2rem;
+    line-height:1;
+    color:var(--crema);
+  }
+
+  #contadorCierre .contador-etiqueta{
+    display:block;
+    margin-top:5px;
+    color:var(--humo);
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+  }
+
+  #contadorCierre .contador-cierre-nota{
+    margin-top:12px;
+    color:var(--humo);
+    font-size:.78rem;
+    line-height:1.45;
+  }
+
+  @media(max-width:520px){
+    #contadorCierre .contador-bloque{
+      min-width:72px;
+      flex:1;
+    }
+
+    #contadorCierre .contador-numero{
+      font-size:1.65rem;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -852,6 +991,49 @@
       <span>TERMAS DEL ARAPEY</span>
     </div>
   </header>
+
+  <section id="contadorCierre" aria-live="polite">
+    <div class="contador-cierre-titulo">TIEMPO RESTANTE PARA EL CIERRE DE INSCRIPCIONES</div>
+
+    <div class="contador-cierre-grid">
+      <div class="contador-bloque">
+        <span class="contador-numero" id="contadorDias">00</span>
+        <span class="contador-etiqueta">Días</span>
+      </div>
+
+      <div class="contador-bloque">
+        <span class="contador-numero" id="contadorHoras">00</span>
+        <span class="contador-etiqueta">Horas</span>
+      </div>
+
+      <div class="contador-bloque">
+        <span class="contador-numero" id="contadorMinutos">00</span>
+        <span class="contador-etiqueta">Minutos</span>
+      </div>
+
+      <div class="contador-bloque">
+        <span class="contador-numero" id="contadorSegundos">00</span>
+        <span class="contador-etiqueta">Segundos</span>
+      </div>
+    </div>
+
+    <div class="contador-cierre-nota">
+      Las inscripciones cierran automáticamente el 08/08/2026 a las 00:00 (UTC−3).
+    </div>
+  </section>
+
+  <section id="inscripcionesCerradas" role="status" aria-live="polite">
+    <div class="cierre-icono" aria-hidden="true">🔒</div>
+    <h2>INSCRIPCIONES CERRADAS</h2>
+    <p>
+      El período de inscripciones para la Copa Integración DNB 2026 ha finalizado.
+      Ya no es posible ingresar ni enviar nuevas inscripciones.
+    </p>
+    <div class="fecha-cierre">
+      CIERRE: 08/08/2026 · 00:00 · UTC−3
+    </div>
+  </section>
+
 
   <nav class="stepper" aria-label="Pasos de inscripción">
     <div class="paso-tab activo" data-tab="1"><span class="n">01</span>Modalidad</div>
@@ -1157,12 +1339,165 @@
    Vacía = modo demo (no envía, muestra los datos en consola). */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4tJ6Is7KYS7a7zdxsx3poAshXihPdo4CWOZVAiKzHIq-FKTL7ZRWdQ-AVEa9sbJCE/exec";
 const MAX_ARCHIVO_MB = 5;
+
+/* Cierre automático:
+   08/08/2026 a las 00:00 en UTC−3.
+   Equivale a 08/08/2026 03:00 UTC. */
+const FECHA_CIERRE_INSCRIPCIONES =
+  new Date('2026-08-08T00:00:00-03:00').getTime();
+
+/*
+  CONTROL MANUAL DE INSCRIPCIONES
+
+  'auto'     = respeta la fecha y hora de cierre.
+  'abiertas' = mantiene el formulario abierto aunque haya pasado la fecha.
+  'cerradas' = cierra el formulario inmediatamente.
+
+  Para extender el período luego del cierre, cambia:
+    const MODO_INSCRIPCIONES = 'auto';
+  por:
+    const MODO_INSCRIPCIONES = 'abiertas';
+
+  Para volver al cierre automático, usa nuevamente:
+    const MODO_INSCRIPCIONES = 'auto';
+*/
+const MODO_INSCRIPCIONES = 'auto';
+
+let INSCRIPCIONES_CERRADAS = false;
+
 /* ================================================= */
 
 const $ = id => document.getElementById(id);
 const pasos = document.querySelectorAll('.paso');
 const tabs = document.querySelectorAll('.paso-tab');
 let pasoActual = 1;
+
+
+/* ---------- Cierre automático de inscripciones ---------- */
+
+/*
+  REAPERTURA:
+  No hace falta borrar código.
+  Edita únicamente MODO_INSCRIPCIONES arriba:
+    'auto'     -> cierre según fecha.
+    'abiertas' -> reapertura manual.
+    'cerradas' -> cierre manual.
+*/
+
+function inscripcionesEstanCerradas(){
+  if (MODO_INSCRIPCIONES === 'abiertas') return false;
+  if (MODO_INSCRIPCIONES === 'cerradas') return true;
+
+  return Date.now() >= FECHA_CIERRE_INSCRIPCIONES;
+}
+
+function bloquearControlesFormulario(){
+  const formulario = document.getElementById('formulario');
+  if (!formulario) return;
+
+  formulario
+    .querySelectorAll('input, select, textarea, button')
+    .forEach(function(control){
+      control.disabled = true;
+      control.setAttribute('aria-disabled', 'true');
+    });
+}
+
+function aplicarEstadoCierreInscripciones(){
+  INSCRIPCIONES_CERRADAS = inscripcionesEstanCerradas();
+
+  if (!INSCRIPCIONES_CERRADAS) return false;
+
+  document.body.classList.add('inscripciones-cerradas');
+
+  const cartel = document.getElementById('inscripcionesCerradas');
+  if (cartel) cartel.classList.add('visible');
+
+  bloquearControlesFormulario();
+
+  try {
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch(e) {
+    window.scrollTo(0, 0);
+  }
+
+  return true;
+}
+
+function formatearContadorCierre(valor){
+  return String(Math.max(0, valor)).padStart(2, '0');
+}
+
+function actualizarContadorCierre(){
+  const contador = document.getElementById('contadorCierre');
+  if (!contador) return;
+
+  if (MODO_INSCRIPCIONES === 'abiertas') {
+    contador.classList.add('oculto');
+    return;
+  }
+
+  if (MODO_INSCRIPCIONES === 'cerradas') {
+    contador.classList.add('oculto');
+    aplicarEstadoCierreInscripciones();
+    return;
+  }
+
+  const restante = FECHA_CIERRE_INSCRIPCIONES - Date.now();
+
+  if (restante <= 0) {
+    contador.classList.add('oculto');
+    aplicarEstadoCierreInscripciones();
+    return;
+  }
+
+  const totalSegundos = Math.floor(restante / 1000);
+
+  const dias = Math.floor(totalSegundos / 86400);
+  const horas = Math.floor((totalSegundos % 86400) / 3600);
+  const minutos = Math.floor((totalSegundos % 3600) / 60);
+  const segundos = totalSegundos % 60;
+
+  const elDias = document.getElementById('contadorDias');
+  const elHoras = document.getElementById('contadorHoras');
+  const elMinutos = document.getElementById('contadorMinutos');
+  const elSegundos = document.getElementById('contadorSegundos');
+
+  if (elDias) elDias.textContent = formatearContadorCierre(dias);
+  if (elHoras) elHoras.textContent = formatearContadorCierre(horas);
+  if (elMinutos) elMinutos.textContent = formatearContadorCierre(minutos);
+  if (elSegundos) elSegundos.textContent = formatearContadorCierre(segundos);
+}
+
+function programarCierreAutomatico(){
+  if (MODO_INSCRIPCIONES === 'abiertas') {
+    INSCRIPCIONES_CERRADAS = false;
+    document.body.classList.remove('inscripciones-cerradas');
+
+    const cartel = document.getElementById('inscripcionesCerradas');
+    if (cartel) cartel.classList.remove('visible');
+
+    const contador = document.getElementById('contadorCierre');
+    if (contador) contador.classList.add('oculto');
+
+    return;
+  }
+
+  if (aplicarEstadoCierreInscripciones()) {
+    const contador = document.getElementById('contadorCierre');
+    if (contador) contador.classList.add('oculto');
+    return;
+  }
+
+  actualizarContadorCierre();
+
+  window.setInterval(function(){
+    actualizarContadorCierre();
+  }, 1000);
+}
+
+/* Aplicar el estado y contador apenas carga la página. */
+programarCierreAutomatico();
 
 /* ---------- Navegación entre pasos ---------- */
 function irAPaso(n){
@@ -1178,6 +1513,7 @@ function irAPaso(n){
 }
 function avanzarSeguro(){
   try {
+    if (aplicarEstadoCierreInscripciones()) return;
     if (!validarPaso(pasoActual)) return;
 
     if (pasoActual === 1 && esInscripcionIndividualSinCapitan()) {
@@ -2306,6 +2642,7 @@ async function enviarInscripcionDefinitiva() {
 
 /* ---------- Envío directo ---------- */
 $('btnEnviar').addEventListener('click', async () => {
+  if (aplicarEstadoCierreInscripciones()) return;
   if (!validarPaso(3)) return;
   await enviarInscripcionDefinitiva();
 });
