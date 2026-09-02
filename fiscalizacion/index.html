@@ -520,7 +520,7 @@ body.fiscalizacion-cerrada #btnAgregar{
     <label class="label">Buscar inscripción, cuerpo o participante</label>
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input id="busqueda" type="text" list="listaInscripciones" value="" placeholder="Ej.: COPA-0049">
+      <input id="busqueda" type="text" list="listaInscripciones" value="" placeholder="Ej.: 48">
       <datalist id="listaInscripciones"></datalist>
       <button class="btn btn-pri" id="btnCargarInscripcion" type="button" style="margin-top:10px;width:100%">
         CARGAR INSCRIPCIÓN
@@ -678,6 +678,63 @@ body.fiscalizacion-cerrada #btnAgregar{
  * ========================================================= */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4tJ6Is7KYS7a7zdxsx3poAshXihPdo4CWOZVAiKzHIq-FKTL7ZRWdQ-AVEa9sbJCE/exec";
 
+function jsonpAppsScript(parametros){
+  return new Promise((resolve,reject)=>{
+    const callback =
+      '__jsonpFiscalizacion_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random()*100000);
+
+    const script =
+      document.createElement('script');
+
+    const timeout =
+      setTimeout(()=>{
+        limpiar();
+        reject(new Error(
+          'Tiempo de espera agotado al consultar Apps Script.'
+        ));
+      },15000);
+
+    function limpiar(){
+      clearTimeout(timeout);
+      try{
+        delete window[callback];
+      }catch(e){
+        window[callback] = undefined;
+      }
+      if(script.parentNode){
+        script.parentNode.removeChild(script);
+      }
+    }
+
+    window[callback] = function(datos){
+      limpiar();
+      resolve(datos);
+    };
+
+    const qs = new URLSearchParams({
+      ...parametros,
+      callback: callback,
+      _: String(Date.now())
+    });
+
+    script.src =
+      SCRIPT_URL + '?' + qs.toString();
+
+    script.onerror = function(){
+      limpiar();
+      reject(new Error(
+        'No se pudo conectar con Apps Script.'
+      ));
+    };
+
+    document.head.appendChild(script);
+  });
+}
+
+
 const TIPOS_PENALIZACION = [
   {nombre:'Error técnico', segundos:5},
   {nombre:'Incumplimiento de recorrido', segundos:10},
@@ -711,7 +768,31 @@ function escaparHTML(valor){
 }
 
 function normalizarId(valor){
-  return String(valor || '').trim().toUpperCase();
+  const texto =
+    String(valor || '')
+      .trim()
+      .toUpperCase();
+
+  if(!texto) return '';
+
+  if(/^\d+$/.test(texto)){
+    return (
+      'COPA-' +
+      String(parseInt(texto,10)).padStart(4,'0')
+    );
+  }
+
+  const coincidencia =
+    texto.match(/^COPA[-\s]?(\d+)$/);
+
+  if(coincidencia){
+    return (
+      'COPA-' +
+      String(parseInt(coincidencia[1],10)).padStart(4,'0')
+    );
+  }
+
+  return texto;
 }
 
 function formatoTiempo(segundos){
@@ -1351,8 +1432,8 @@ async function cargarInscripcion(id){
 
   if(!/^COPA-\d{4,}$/.test(clave)){
     alert(
-      'Ingresá una inscripción válida. ' +
-      'Ejemplo: COPA-0049'
+      'Ingresá solamente el número de inscripción. ' +
+      'Ejemplo: 48'
     );
     return;
   }
@@ -1371,32 +1452,11 @@ async function cargarInscripcion(id){
   btn.textContent = 'CARGANDO...';
 
   try {
-    const url =
-      SCRIPT_URL +
-      '?accion=fiscalizacion_inscripcion' +
-      '&id=' +
-      encodeURIComponent(clave) +
-      '&_=' +
-      Date.now();
-
-    const respuesta =
-      await fetch(
-        url,
-        {
-          method:'GET',
-          cache:'no-store'
-        }
-      );
-
-    if(!respuesta.ok){
-      throw new Error(
-        'HTTP ' +
-        respuesta.status
-      );
-    }
-
     const json =
-      await respuesta.json();
+      await jsonpAppsScript({
+        accion:'fiscalizacion_inscripcion',
+        id:clave
+      });
 
     if(!json.ok){
       throw new Error(
@@ -1818,16 +1878,10 @@ function bloquearFiscalizacion(){
 
 async function cargarRanking(){
   try {
-    const respuesta =
-      await fetch(
-        SCRIPT_URL +
-        '?accion=ranking&_=' +
-        Date.now(),
-        {cache:'no-store'}
-      );
-
     const json =
-      await respuesta.json();
+      await jsonpAppsScript({
+        accion:'ranking'
+      });
 
     if(!json.ok) return;
 
@@ -1900,20 +1954,11 @@ async function renderRankingSeleccionado(){
   }
 
   try {
-    const respuesta =
-      await fetch(
-        SCRIPT_URL +
-        '?accion=ranking&modalidad=' +
-        encodeURIComponent(
-          modalidad
-        ) +
-        '&_=' +
-        Date.now(),
-        {cache:'no-store'}
-      );
-
     const json =
-      await respuesta.json();
+      await jsonpAppsScript({
+        accion:'ranking',
+        modalidad:modalidad
+      });
 
     if(json.ok){
       renderRankingDesdeDatos(
