@@ -520,7 +520,7 @@ body.fiscalizacion-cerrada #btnAgregar{
     <label class="label">Buscar inscripción, cuerpo o participante</label>
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input id="busqueda" type="text" list="listaInscripciones" value="COPA-0049" placeholder="COPA-0049, Maldonado, participante...">
+      <input id="busqueda" type="text" list="listaInscripciones" value="" placeholder="Ej.: COPA-0049">
       <datalist id="listaInscripciones"></datalist>
       <button class="btn btn-pri" id="btnCargarInscripcion" type="button" style="margin-top:10px;width:100%">
         CARGAR INSCRIPCIÓN
@@ -543,14 +543,14 @@ body.fiscalizacion-cerrada #btnAgregar{
   <div class="section-title">INSCRIPCIÓN SELECCIONADA</div>
 
   <div class="equipo-head">
-    <div class="cuerpo" id="equipoCuerpo">BOMBEROS DE MALDONADO</div>
-    <div class="copa" id="equipoCopa">COPA-0049 · GRUPAL MIXTA</div>
+    <div class="cuerpo" id="equipoCuerpo">SELECCIONE UNA INSCRIPCIÓN</div>
+    <div class="copa" id="equipoCopa">—</div>
   </div>
 
   <div class="meta">
     <div class="meta-box">
       <strong>CAPITÁN</strong>
-      <span id="equipoCapitan">José Ferreira</span>
+      <span id="equipoCapitan">—</span>
     </div>
     <div class="meta-box">
       <strong>MODALIDAD EN FISCALIZACIÓN</strong>
@@ -673,265 +673,10 @@ body.fiscalizacion-cerrada #btnAgregar{
 <div class="toast" id="toast"></div>
 
 <script>
-
-const INSCRIPCIONES = {
-  'COPA-0049': {
-    cuerpo: 'BOMBEROS DE MALDONADO',
-    capitan: 'José Ferreira',
-    modalidades: ['GRUPAL MIXTA', 'GRUPAL MASCULINO'],
-    modalidadActual: 'GRUPAL MIXTA',
-    estado: 'En fiscalización',
-    participantes: [
-      {nombre:'Martín Rodríguez', sexo:'Masculino', edad:31},
-      {nombre:'Camila Pereira', sexo:'Femenino', edad:29},
-      {nombre:'Lucas Silva', sexo:'Masculino', edad:34},
-      {nombre:'Valentina Núñez', sexo:'Femenino', edad:27}
-    ],
-    fiscalizacion: {
-      minutos:2,
-      segundos:45,
-      centesimas:38,
-      observacion:'',
-      penalizaciones:[
-        {tipo:1, segundos:10, reincidencia:false, motivo:'Prueba de ejemplo'}
-      ]
-    },
-    historial:[
-      {hora:'10:14', texto:'Fiscalización iniciada.'}
-    ]
-  },
-
-  'COPA-0059': {
-    cuerpo: 'BOMBEROS DE CANELONES',
-    capitan: 'José Ferreira',
-    modalidades: ['GRUPAL FEMENINO'],
-    modalidadActual: 'GRUPAL FEMENINO',
-    estado: 'Pendiente',
-    participantes: [
-      {nombre:'Andrea Silva', sexo:'Femenino', edad:30},
-      {nombre:'Lucía Rodríguez', sexo:'Femenino', edad:28},
-      {nombre:'Natalia Pérez', sexo:'Femenino', edad:35},
-      {nombre:'Carolina Núñez', sexo:'Femenino', edad:26}
-    ],
-    fiscalizacion: {
-      minutos:0,
-      segundos:0,
-      centesimas:0,
-      observacion:'',
-      penalizaciones:[]
-    },
-    historial:[
-      {hora:'09:55', texto:'Inscripción disponible para fiscalización.'}
-    ]
-  },
-
-  'COPA-0067': {
-    cuerpo: 'BOMBEROS DE COLONIA',
-    capitan: 'NO REQUIERE CAPITÁN',
-    modalidades: ['INDIVIDUAL MASCULINO'],
-    modalidadActual: 'INDIVIDUAL MASCULINO',
-    estado: 'Pendiente',
-    participantes: [
-      {nombre:'Federico Gómez', sexo:'Masculino', edad:32}
-    ],
-    fiscalizacion: {
-      minutos:0,
-      segundos:0,
-      centesimas:0,
-      observacion:'',
-      penalizaciones:[]
-    },
-    historial:[
-      {hora:'08:40', texto:'Inscripción individual cargada.'}
-    ]
-  }
-};
-
-let INSCRIPCION_ACTUAL = 'COPA-0049';
-
-function normalizarBusquedaInscripcion(valor){
-  return String(valor || '').trim().toUpperCase();
-}
-
-function construirDatalistInscripciones(){
-  const lista = document.getElementById('listaInscripciones');
-  lista.innerHTML = '';
-
-  Object.keys(INSCRIPCIONES).forEach(id=>{
-    const dato = INSCRIPCIONES[id];
-    const option = document.createElement('option');
-    option.value = id;
-    option.label = id + ' — ' + dato.cuerpo + ' — ' + dato.modalidadActual;
-    lista.appendChild(option);
-  });
-}
-
-function guardarEstadoFiscalizacionActual(){
-  const dato = INSCRIPCIONES[INSCRIPCION_ACTUAL];
-  if(!dato) return;
-
-  dato.modalidadActual = document.getElementById('modalidadFiscalizacion').value;
-  dato.participantes = datosParticipantesActuales();
-
-  dato.fiscalizacion.minutos = Number(document.getElementById('minutos').value)||0;
-  dato.fiscalizacion.segundos = Number(document.getElementById('segundos').value)||0;
-  dato.fiscalizacion.centesimas = Number(document.getElementById('centesimas').value)||0;
-
-  const obs = document.querySelector('textarea');
-  dato.fiscalizacion.observacion = obs ? obs.value : '';
-
-  dato.fiscalizacion.penalizaciones = Array.from(
-    document.querySelectorAll('.pen-row')
-  ).map(row=>({
-    tipo:Number(row.querySelector('.pen-tipo').value)||0,
-    segundos:Number(row.querySelector('.pen-seg').value)||0,
-    reincidencia:row.querySelector('.pen-reinc').checked,
-    motivo:row.querySelector('.pen-motivo').value.trim()
-  }));
-}
-
-function renderParticipantes(participantes){
-  const cont = document.getElementById('listaParticipantes');
-  cont.innerHTML = '';
-
-  participantes.forEach((p,idx)=>{
-    const row = document.createElement('div');
-    row.className = 'part-row part-editable';
-    row.dataset.participante = String(idx+1);
-
-    row.innerHTML = `
-      <div class="dorsal">${idx+1}</div>
-      <div>
-        <input class="part-nombre" type="text" value="${escaparHTML(p.nombre)}" aria-label="Nombre participante ${idx+1}">
-      </div>
-      <div>
-        <select class="part-sexo" aria-label="Sexo participante ${idx+1}">
-          <option ${p.sexo==='Masculino'?'selected':''}>Masculino</option>
-          <option ${p.sexo==='Femenino'?'selected':''}>Femenino</option>
-        </select>
-      </div>
-      <div>
-        <input class="part-edad" type="number" min="18" max="99" value="${Number(p.edad)||''}" aria-label="Edad participante ${idx+1}">
-      </div>
-    `;
-
-    cont.appendChild(row);
-  });
-}
-
-function escaparHTML(valor){
-  return String(valor ?? '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;');
-}
-
-function renderModalidades(dato){
-  const select = document.getElementById('modalidadFiscalizacion');
-  select.innerHTML = '';
-
-  dato.modalidades.forEach(modalidad=>{
-    const option = document.createElement('option');
-    option.value = modalidad;
-    option.textContent = modalidad
-      .toLowerCase()
-      .replace(/\b\w/g,m=>m.toUpperCase());
-
-    if(modalidad === dato.modalidadActual){
-      option.selected = true;
-    }
-
-    select.appendChild(option);
-  });
-}
-
-function renderHistorial(historial){
-  const cont = document.getElementById('listaHistorial');
-  cont.innerHTML = '';
-
-  historial.forEach(item=>{
-    const row = document.createElement('div');
-    row.className = 'hist-item';
-    row.innerHTML = `<strong>${escaparHTML(item.hora)}</strong> <span>${escaparHTML(item.texto)}</span>`;
-    cont.appendChild(row);
-  });
-}
-
-function renderPenalizaciones(penalizaciones){
-  document.getElementById('penList').innerHTML = '';
-
-  penalizaciones.forEach(p=>{
-    agregarPenalizacion(p.tipo, p);
-  });
-
-  if(!penalizaciones.length){
-    recalcular();
-  }
-}
-
-function cargarInscripcion(id){
-  const clave = normalizarBusquedaInscripcion(id);
-  const dato = INSCRIPCIONES[clave];
-
-  if(!dato){
-    alert('No se encontró la inscripción ' + clave + ' en este prototipo.');
-    return false;
-  }
-
-  if(INSCRIPCION_ACTUAL && INSCRIPCIONES[INSCRIPCION_ACTUAL]){
-    guardarEstadoFiscalizacionActual();
-  }
-
-  INSCRIPCION_ACTUAL = clave;
-
-  document.body.classList.remove('fiscalizacion-cerrada');
-
-  const btnCerrar = document.getElementById('btnCerrar');
-  btnCerrar.disabled = false;
-  btnCerrar.textContent = 'CERRAR FISCALIZACIÓN';
-
-  const btnBorrador = document.getElementById('btnBorrador');
-  btnBorrador.disabled = false;
-
-  document.getElementById('busqueda').value = clave;
-  document.getElementById('equipoCuerpo').textContent = dato.cuerpo;
-  document.getElementById('equipoCopa').textContent =
-    clave + ' · ' + dato.modalidadActual;
-  document.getElementById('equipoCapitan').textContent = dato.capitan;
-
-  renderModalidades(dato);
-  renderParticipantes(dato.participantes);
-  renderHistorial(dato.historial);
-
-  document.getElementById('minutos').value = dato.fiscalizacion.minutos;
-  document.getElementById('segundos').value = dato.fiscalizacion.segundos;
-  document.getElementById('centesimas').value = dato.fiscalizacion.centesimas;
-
-  const obs = document.querySelector('textarea');
-  if(obs) obs.value = dato.fiscalizacion.observacion || '';
-
-  renderPenalizaciones(dato.fiscalizacion.penalizaciones || []);
-
-  construirSelectorRanking();
-
-  const selectRanking = document.getElementById('rankingModalidad');
-  if(
-    selectRanking &&
-    Array.from(selectRanking.options).some(
-      o=>o.value===dato.modalidadActual
-    )
-  ){
-    selectRanking.value = dato.modalidadActual;
-  }
-
-  recalcular();
-  renderRanking();
-
-  mostrarToast('Inscripción cargada: ' + clave);
-  return true;
-}
+/* =========================================================
+ * CONEXIÓN REAL CON GOOGLE APPS SCRIPT
+ * ========================================================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4tJ6Is7KYS7a7zdxsx3poAshXihPdo4CWOZVAiKzHIq-FKTL7ZRWdQ-AVEa9sbJCE/exec";
 
 const TIPOS_PENALIZACION = [
   {nombre:'Error técnico', segundos:5},
@@ -942,170 +687,1274 @@ const TIPOS_PENALIZACION = [
   {nombre:'Otra penalización', segundos:5}
 ];
 
+let INSCRIPCION_ACTUAL = '';
+let DATOS_INSCRIPCION = null;
 
-function tiempoBaseDeFiscalizacion(f){
-  if(!f) return 0;
+/*
+ * Estado de trabajo por modalidad.
+ * Permite cambiar de modalidad sin perder lo cargado en la pantalla.
+ */
+const ESTADO_MODALIDADES = {};
+
+
+/* =========================================================
+ * UTILIDADES
+ * ========================================================= */
+
+function escaparHTML(valor){
+  return String(valor ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+function normalizarId(valor){
+  return String(valor || '').trim().toUpperCase();
+}
+
+function formatoTiempo(segundos){
+  segundos = Math.max(0, Number(segundos) || 0);
+
+  let min = Math.floor(segundos / 60);
+  let seg = Math.floor(segundos % 60);
+  let cen = Math.round(
+    (segundos - Math.floor(segundos)) * 100
+  );
+
+  if(cen >= 100){
+    cen = 0;
+    seg++;
+    if(seg >= 60){
+      seg = 0;
+      min++;
+    }
+  }
+
   return (
-    (Number(f.minutos)||0)*60 +
-    (Number(f.segundos)||0) +
-    (Number(f.centesimas)||0)/100
+    String(min).padStart(2,'0') + ':' +
+    String(seg).padStart(2,'0') + '.' +
+    String(cen).padStart(2,'0')
   );
 }
 
-function penalizacionTotalDeFiscalizacion(f){
-  if(!f || !Array.isArray(f.penalizaciones)) return 0;
+function mostrarToast(texto){
+  const t = document.getElementById('toast');
+  t.textContent = texto;
+  t.classList.add('visible');
 
-  return f.penalizaciones.reduce((total,p)=>{
-    const seg = Number(p.segundos)||0;
-    return total + seg + (p.reincidencia ? seg : 0);
-  },0);
+  setTimeout(
+    ()=>t.classList.remove('visible'),
+    2500
+  );
 }
 
-function tiempoFinalDeInscripcion(id){
-  const dato = INSCRIPCIONES[id];
-  if(!dato) return null;
+function setEstadoTexto(texto){
+  const estado = document.querySelector('.estado');
+  if(estado){
+    estado.textContent = '● ' + texto;
+  }
+}
 
-  /*
-   * Para la inscripción actualmente visible tomamos los datos
-   * en vivo, aunque todavía no se haya presionado Guardar borrador.
-   */
-  if(id === INSCRIPCION_ACTUAL){
-    const base = baseSegundos();
+function baseSegundos(){
+  const m =
+    Number(document.getElementById('minutos').value) || 0;
 
-    let penal = 0;
-    document.querySelectorAll('.pen-row').forEach(row=>{
-      const seg = Number(row.querySelector('.pen-seg').value)||0;
-      const reinc = row.querySelector('.pen-reinc').checked;
-      penal += seg + (reinc ? seg : 0);
+  const s =
+    Number(document.getElementById('segundos').value) || 0;
+
+  const c =
+    Number(document.getElementById('centesimas').value) || 0;
+
+  return m * 60 + s + c / 100;
+}
+
+function datosParticipantesActuales(){
+  return Array
+    .from(
+      document.querySelectorAll(
+        '.part-editable'
+      )
+    )
+    .map((row, idx)=>({
+      numero: idx + 1,
+      nombre:
+        row.querySelector(
+          '.part-nombre'
+        ).value.trim(),
+      sexo:
+        row.querySelector(
+          '.part-sexo'
+        ).value,
+      edad:
+        Number(
+          row.querySelector(
+            '.part-edad'
+          ).value
+        ) || 0,
+      celular:
+        row.dataset.celular || ''
+    }));
+}
+
+function penalizacionesActuales(){
+  return Array
+    .from(
+      document.querySelectorAll(
+        '.pen-row'
+      )
+    )
+    .map(row=>({
+      tipo:
+        row.querySelector(
+          '.pen-tipo'
+        ).value,
+      segundos:
+        Number(
+          row.querySelector(
+            '.pen-seg'
+          ).value
+        ) || 0,
+      reincidencia:
+        row.querySelector(
+          '.pen-reinc'
+        ).checked,
+      motivo:
+        row.querySelector(
+          '.pen-motivo'
+        ).value.trim()
+    }));
+}
+
+function recalcular(){
+  let totalPenalizacion = 0;
+  let reincidencias = 0;
+
+  document
+    .querySelectorAll('.pen-row')
+    .forEach(row=>{
+      const segundos =
+        Number(
+          row.querySelector(
+            '.pen-seg'
+          ).value
+        ) || 0;
+
+      const reincidente =
+        row.querySelector(
+          '.pen-reinc'
+        ).checked;
+
+      totalPenalizacion += segundos;
+
+      if(reincidente){
+        totalPenalizacion += segundos;
+        reincidencias++;
+      }
     });
 
-    if(base <= 0) return null;
+  const base = baseSegundos();
 
-    return {
-      base:base,
-      penalizacion:penal,
-      final:base+penal
-    };
+  document.getElementById(
+    'tiempoBase'
+  ).textContent = formatoTiempo(base);
+
+  document.getElementById(
+    'penalizacionTotal'
+  ).textContent =
+    '+' + formatoTiempo(totalPenalizacion);
+
+  document.getElementById(
+    'reincidencias'
+  ).textContent = reincidencias;
+
+  document.getElementById(
+    'tiempoFinal'
+  ).textContent =
+    formatoTiempo(
+      base + totalPenalizacion
+    );
+}
+
+
+/* =========================================================
+ * PARTICIPANTES
+ * ========================================================= */
+
+function renderParticipantes(participantes){
+  const cont =
+    document.getElementById(
+      'listaParticipantes'
+    );
+
+  cont.innerHTML = '';
+
+  (participantes || [])
+    .forEach((p, idx)=>{
+      const row =
+        document.createElement('div');
+
+      row.className =
+        'part-row part-editable';
+
+      row.dataset.participante =
+        String(idx + 1);
+
+      row.dataset.celular =
+        p.celular || '';
+
+      row.innerHTML = `
+        <div class="dorsal">
+          ${idx + 1}
+        </div>
+
+        <div>
+          <input
+            class="part-nombre"
+            type="text"
+            value="${escaparHTML(p.nombre || '')}"
+          >
+        </div>
+
+        <div>
+          <select class="part-sexo">
+            <option
+              ${String(p.sexo).toLowerCase()==='masculino'?'selected':''}
+            >
+              Masculino
+            </option>
+
+            <option
+              ${String(p.sexo).toLowerCase()==='femenino'?'selected':''}
+            >
+              Femenino
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <input
+            class="part-edad"
+            type="number"
+            min="1"
+            max="99"
+            value="${Number(p.edad) || ''}"
+          >
+        </div>
+      `;
+
+      cont.appendChild(row);
+    });
+}
+
+
+/* =========================================================
+ * PENALIZACIONES
+ * ========================================================= */
+
+function indiceTipoPenalizacion(valor){
+  const numero = Number(valor);
+
+  if(
+    Number.isInteger(numero) &&
+    numero >= 0 &&
+    numero < TIPOS_PENALIZACION.length
+  ){
+    return numero;
   }
 
-  const base = tiempoBaseDeFiscalizacion(dato.fiscalizacion);
-  if(base <= 0) return null;
+  const texto =
+    String(valor || '')
+      .trim()
+      .toLowerCase();
 
-  const penalizacion =
-    penalizacionTotalDeFiscalizacion(dato.fiscalizacion);
+  const idx =
+    TIPOS_PENALIZACION.findIndex(
+      p=>p.nombre.toLowerCase() === texto
+    );
 
-  return {
-    base:base,
-    penalizacion:penalizacion,
-    final:base+penalizacion
+  return idx >= 0 ? idx : 0;
+}
+
+function agregarPenalizacion(
+  indice = 0,
+  datos = null
+){
+  indice =
+    indiceTipoPenalizacion(indice);
+
+  const row =
+    document.createElement('div');
+
+  row.className = 'pen-row';
+
+  const opciones =
+    TIPOS_PENALIZACION
+      .map((p, i)=>`
+        <option value="${i}">
+          ${p.nombre}
+        </option>
+      `)
+      .join('');
+
+  row.innerHTML = `
+    <div class="pen-grid">
+      <div>
+        <label class="label">
+          Penalización
+        </label>
+
+        <select class="pen-tipo">
+          ${opciones}
+        </select>
+      </div>
+
+      <div>
+        <label class="label">
+          Tiempo a sumar (seg.)
+        </label>
+
+        <input
+          class="pen-seg"
+          type="number"
+          min="0"
+          value="${TIPOS_PENALIZACION[indice].segundos}"
+        >
+      </div>
+
+      <div>
+        <label class="label">
+          Reincidencia
+        </label>
+
+        <label class="checkline">
+          <input
+            class="pen-reinc"
+            type="checkbox"
+          >
+          Sumar nuevamente
+        </label>
+      </div>
+
+      <button
+        class="btn btn-danger pen-del"
+        type="button"
+      >
+        QUITAR
+      </button>
+    </div>
+
+    <div style="margin-top:10px">
+      <label class="label">
+        Motivo / observación
+      </label>
+
+      <input
+        class="pen-motivo"
+        type="text"
+        placeholder="Detalle de la penalización"
+      >
+    </div>
+  `;
+
+  row.querySelector(
+    '.pen-tipo'
+  ).value = String(indice);
+
+  if(datos){
+    row.querySelector(
+      '.pen-seg'
+    ).value =
+      Number(datos.segundos) || 0;
+
+    row.querySelector(
+      '.pen-reinc'
+    ).checked =
+      Boolean(datos.reincidencia);
+
+    row.querySelector(
+      '.pen-motivo'
+    ).value =
+      datos.motivo || '';
+  }
+
+  row.querySelector(
+    '.pen-tipo'
+  ).addEventListener(
+    'change',
+    e=>{
+      const i =
+        Number(e.target.value);
+
+      row.querySelector(
+        '.pen-seg'
+      ).value =
+        TIPOS_PENALIZACION[i].segundos;
+
+      recalcular();
+    }
+  );
+
+  row.querySelector(
+    '.pen-seg'
+  ).addEventListener(
+    'input',
+    recalcular
+  );
+
+  row.querySelector(
+    '.pen-reinc'
+  ).addEventListener(
+    'change',
+    recalcular
+  );
+
+  row.querySelector(
+    '.pen-del'
+  ).addEventListener(
+    'click',
+    ()=>{
+      row.remove();
+      recalcular();
+    }
+  );
+
+  document
+    .getElementById('penList')
+    .appendChild(row);
+
+  recalcular();
+}
+
+function renderPenalizaciones(lista){
+  const cont =
+    document.getElementById(
+      'penList'
+    );
+
+  cont.innerHTML = '';
+
+  (lista || []).forEach(p=>{
+    agregarPenalizacion(
+      p.tipo,
+      p
+    );
+  });
+
+  recalcular();
+}
+
+
+/* =========================================================
+ * ESTADO POR MODALIDAD
+ * ========================================================= */
+
+function guardarEstadoPantallaModalidad(){
+  if(
+    !INSCRIPCION_ACTUAL ||
+    !DATOS_INSCRIPCION
+  ){
+    return;
+  }
+
+  const modalidad =
+    document.getElementById(
+      'modalidadFiscalizacion'
+    ).value;
+
+  if(!modalidad) return;
+
+  ESTADO_MODALIDADES[
+    INSCRIPCION_ACTUAL + '|' + modalidad
+  ] = {
+    participantes:
+      datosParticipantesActuales(),
+    minutos:
+      Number(
+        document.getElementById(
+          'minutos'
+        ).value
+      ) || 0,
+    segundos:
+      Number(
+        document.getElementById(
+          'segundos'
+        ).value
+      ) || 0,
+    centesimas:
+      Number(
+        document.getElementById(
+          'centesimas'
+        ).value
+      ) || 0,
+    observacion:
+      (
+        document.querySelector(
+          'textarea'
+        ) || {}
+      ).value || '',
+    penalizaciones:
+      penalizacionesActuales()
   };
 }
 
-function modalidadesDisponiblesRanking(){
-  const set = new Set();
+function estadoModalidad(modalidad){
+  const clave =
+    INSCRIPCION_ACTUAL +
+    '|' +
+    modalidad;
 
-  Object.values(INSCRIPCIONES).forEach(dato=>{
-    (dato.modalidades || []).forEach(m=>set.add(m));
-  });
+  if(ESTADO_MODALIDADES[clave]){
+    return ESTADO_MODALIDADES[clave];
+  }
 
-  return Array.from(set).sort((a,b)=>a.localeCompare(b,'es'));
+  const guardado =
+    DATOS_INSCRIPCION &&
+    DATOS_INSCRIPCION.resultados
+      ? DATOS_INSCRIPCION
+          .resultados[modalidad]
+      : null;
+
+  if(guardado){
+    return {
+      participantes:
+        guardado.participantes &&
+        guardado.participantes.length
+          ? guardado.participantes
+          : (
+              DATOS_INSCRIPCION
+                .participantesPorModalidad[
+                  modalidad
+                ] || []
+            ),
+      minutos:
+        Number(guardado.minutos) || 0,
+      segundos:
+        Number(guardado.segundos) || 0,
+      centesimas:
+        Number(guardado.centesimas) || 0,
+      observacion:
+        guardado.observacion || '',
+      penalizaciones:
+        guardado.penalizaciones || [],
+      estado:
+        guardado.estado || 'BORRADOR'
+    };
+  }
+
+  return {
+    participantes:
+      DATOS_INSCRIPCION
+        .participantesPorModalidad[
+          modalidad
+        ] || [],
+    minutos:0,
+    segundos:0,
+    centesimas:0,
+    observacion:'',
+    penalizaciones:[],
+    estado:'PENDIENTE'
+  };
 }
 
-function construirSelectorRanking(){
-  const select = document.getElementById('rankingModalidad');
-  if(!select) return;
+function mostrarModalidad(modalidad){
+  if(
+    !DATOS_INSCRIPCION ||
+    !modalidad
+  ){
+    return;
+  }
 
-  const actual = select.value;
-  select.innerHTML = '';
+  const estado =
+    estadoModalidad(modalidad);
 
-  modalidadesDisponiblesRanking().forEach(modalidad=>{
-    const op = document.createElement('option');
-    op.value = modalidad;
-    op.textContent = modalidad
-      .toLowerCase()
-      .replace(/\b\w/g,m=>m.toUpperCase());
-    select.appendChild(op);
-  });
+  renderParticipantes(
+    estado.participantes
+  );
 
-  const modalidadActual =
-    INSCRIPCIONES[INSCRIPCION_ACTUAL]?.modalidadActual;
+  document.getElementById(
+    'minutos'
+  ).value =
+    estado.minutos || 0;
+
+  document.getElementById(
+    'segundos'
+  ).value =
+    estado.segundos || 0;
+
+  document.getElementById(
+    'centesimas'
+  ).value =
+    estado.centesimas || 0;
+
+  const textarea =
+    document.querySelector(
+      'textarea'
+    );
+
+  if(textarea){
+    textarea.value =
+      estado.observacion || '';
+  }
+
+  renderPenalizaciones(
+    estado.penalizaciones || []
+  );
+
+  document.getElementById(
+    'equipoCopa'
+  ).textContent =
+    INSCRIPCION_ACTUAL +
+    ' · ' +
+    modalidad;
+
+  setEstadoTexto(
+    estado.estado || 'PENDIENTE'
+  );
+
+  document.body.classList.remove(
+    'fiscalizacion-cerrada'
+  );
+
+  document.getElementById(
+    'btnCerrar'
+  ).disabled = false;
+
+  document.getElementById(
+    'btnCerrar'
+  ).textContent =
+    'CERRAR FISCALIZACIÓN';
+
+  document.getElementById(
+    'btnBorrador'
+  ).disabled = false;
 
   if(
-    actual &&
-    Array.from(select.options).some(o=>o.value===actual)
+    String(
+      estado.estado || ''
+    ).toUpperCase() === 'FINALIZADO'
   ){
-    select.value = actual;
-  }else if(
-    modalidadActual &&
-    Array.from(select.options).some(o=>o.value===modalidadActual)
-  ){
-    select.value = modalidadActual;
+    bloquearFiscalizacion();
+  }
+
+  recalcular();
+}
+
+
+/* =========================================================
+ * CARGAR INSCRIPCIÓN DESDE GOOGLE SHEETS
+ * ========================================================= */
+
+async function cargarInscripcion(id){
+  const clave = normalizarId(id);
+
+  if(!/^COPA-\d{4,}$/.test(clave)){
+    alert(
+      'Ingresá una inscripción válida. ' +
+      'Ejemplo: COPA-0049'
+    );
+    return;
+  }
+
+  guardarEstadoPantallaModalidad();
+
+  const btn =
+    document.getElementById(
+      'btnCargarInscripcion'
+    );
+
+  const textoAnterior =
+    btn.textContent;
+
+  btn.disabled = true;
+  btn.textContent = 'CARGANDO...';
+
+  try {
+    const url =
+      SCRIPT_URL +
+      '?accion=fiscalizacion_inscripcion' +
+      '&id=' +
+      encodeURIComponent(clave) +
+      '&_=' +
+      Date.now();
+
+    const respuesta =
+      await fetch(
+        url,
+        {
+          method:'GET',
+          cache:'no-store'
+        }
+      );
+
+    if(!respuesta.ok){
+      throw new Error(
+        'HTTP ' +
+        respuesta.status
+      );
+    }
+
+    const json =
+      await respuesta.json();
+
+    if(!json.ok){
+      throw new Error(
+        json.error ||
+        'No se pudo cargar la inscripción.'
+      );
+    }
+
+    INSCRIPCION_ACTUAL = clave;
+    DATOS_INSCRIPCION =
+      json.inscripcion;
+
+    document.getElementById(
+      'busqueda'
+    ).value = clave;
+
+    document.getElementById(
+      'equipoCuerpo'
+    ).textContent =
+      DATOS_INSCRIPCION.cuerpo ||
+      'CUERPO NO ESPECIFICADO';
+
+    document.getElementById(
+      'equipoCapitan'
+    ).textContent =
+      DATOS_INSCRIPCION.capitan ||
+      'NO REQUIERE CAPITÁN';
+
+    const selector =
+      document.getElementById(
+        'modalidadFiscalizacion'
+      );
+
+    selector.innerHTML = '';
+
+    (
+      DATOS_INSCRIPCION.modalidades ||
+      []
+    ).forEach(modalidad=>{
+      const op =
+        document.createElement(
+          'option'
+        );
+
+      op.value = modalidad;
+
+      op.textContent =
+        modalidad
+          .toLowerCase()
+          .replace(
+            /\b\w/g,
+            m=>m.toUpperCase()
+          );
+
+      selector.appendChild(op);
+    });
+
+    if(!selector.options.length){
+      throw new Error(
+        'La inscripción no tiene modalidades cargadas.'
+      );
+    }
+
+    mostrarModalidad(
+      selector.value
+    );
+
+    mostrarToast(
+      'Inscripción cargada: ' +
+      clave
+    );
+
+  } catch(error) {
+    console.error(error);
+
+    alert(
+      'No se pudo cargar ' +
+      clave +
+      '.\n\n' +
+      (
+        error && error.message
+          ? error.message
+          : error
+      ) +
+      '\n\nVerificá que la implementación ' +
+      'de Apps Script esté actualizada.'
+    );
+
+  } finally {
+    btn.disabled = false;
+    btn.textContent =
+      textoAnterior;
   }
 }
 
-function obtenerRankingModalidad(modalidad){
-  const filas = [];
 
-  Object.keys(INSCRIPCIONES).forEach(id=>{
-    const dato = INSCRIPCIONES[id];
+/* =========================================================
+ * GUARDAR / CERRAR
+ * ========================================================= */
 
-    /*
-     * La inscripción participa del ranking de la modalidad
-     * que está siendo fiscalizada.
-     */
-    if(dato.modalidadActual !== modalidad) return;
+function validarAntesDeGuardar(cerrar){
+  if(
+    !INSCRIPCION_ACTUAL ||
+    !DATOS_INSCRIPCION
+  ){
+    alert(
+      'Primero cargá una inscripción.'
+    );
+    return false;
+  }
 
-    const tiempos = tiempoFinalDeInscripcion(id);
-    if(!tiempos) return;
+  const modalidad =
+    document.getElementById(
+      'modalidadFiscalizacion'
+    ).value;
 
-    filas.push({
-      id:id,
-      cuerpo:dato.cuerpo,
-      modalidad:dato.modalidadActual,
-      estado:dato.estado || 'Pendiente',
-      base:tiempos.base,
-      penalizacion:tiempos.penalizacion,
-      final:tiempos.final
-    });
-  });
+  if(!modalidad){
+    alert(
+      'Seleccioná una modalidad.'
+    );
+    return false;
+  }
 
-  filas.sort((a,b)=>{
-    if(a.final !== b.final) return a.final-b.final;
-    return a.id.localeCompare(b.id,'es');
-  });
+  const participantes =
+    datosParticipantesActuales();
 
-  return filas;
+  const incompleto =
+    participantes.find(
+      p=>!p.nombre ||
+         !p.sexo ||
+         !p.edad
+    );
+
+  if(incompleto){
+    alert(
+      'Revisá los datos del participante ' +
+      incompleto.numero +
+      '.'
+    );
+    return false;
+  }
+
+  if(
+    cerrar &&
+    baseSegundos() <= 0
+  ){
+    alert(
+      'Para cerrar la fiscalización ' +
+      'debe existir un tiempo obtenido.'
+    );
+    return false;
+  }
+
+  return true;
 }
 
-function renderRanking(){
-  const cont = document.getElementById('rankingContenedor');
-  const select = document.getElementById('rankingModalidad');
+function payloadFiscalizacion(accion){
+  const modalidad =
+    document.getElementById(
+      'modalidadFiscalizacion'
+    ).value;
 
-  if(!cont || !select) return;
+  const textarea =
+    document.querySelector(
+      'textarea'
+    );
 
-  const modalidad = select.value;
-  const ranking = obtenerRankingModalidad(modalidad);
+  return {
+    accion: accion,
+    inscripcion:
+      INSCRIPCION_ACTUAL,
+    modalidad: modalidad,
+    cuerpo:
+      DATOS_INSCRIPCION.cuerpo || '',
+    capitan:
+      DATOS_INSCRIPCION.capitan || '',
+    participantes:
+      datosParticipantesActuales(),
+    minutos:
+      Number(
+        document.getElementById(
+          'minutos'
+        ).value
+      ) || 0,
+    segundos:
+      Number(
+        document.getElementById(
+          'segundos'
+        ).value
+      ) || 0,
+    centesimas:
+      Number(
+        document.getElementById(
+          'centesimas'
+        ).value
+      ) || 0,
+    observacion:
+      textarea
+        ? textarea.value.trim()
+        : '',
+    penalizaciones:
+      penalizacionesActuales(),
+    fiscal:''
+  };
+}
+
+async function enviarFiscalizacion(
+  cerrar
+){
+  if(
+    !validarAntesDeGuardar(
+      cerrar
+    )
+  ){
+    return;
+  }
+
+  const accion =
+    cerrar
+      ? 'fiscalizacion_cerrar'
+      : 'fiscalizacion_guardar';
+
+  if(cerrar){
+    const modalidad =
+      document.getElementById(
+        'modalidadFiscalizacion'
+      ).value;
+
+    const mensaje =
+      'Inscripción: ' +
+      INSCRIPCION_ACTUAL +
+      '\nModalidad: ' +
+      modalidad +
+      '\nTiempo final: ' +
+      document.getElementById(
+        'tiempoFinal'
+      ).textContent +
+      '\n\n¿Confirmás el cierre definitivo?';
+
+    if(!confirm(mensaje)){
+      return;
+    }
+  }
+
+  const payload =
+    payloadFiscalizacion(
+      accion
+    );
+
+  const boton =
+    cerrar
+      ? document.getElementById(
+          'btnCerrar'
+        )
+      : document.getElementById(
+          'btnBorrador'
+        );
+
+  const textoOriginal =
+    boton.textContent;
+
+  boton.disabled = true;
+  boton.textContent =
+    cerrar
+      ? 'CERRANDO...'
+      : 'GUARDANDO...';
+
+  try {
+    /*
+     * Sin Content-Type application/json para evitar
+     * preflight CORS innecesario con Apps Script.
+     */
+    const respuesta =
+      await fetch(
+        SCRIPT_URL,
+        {
+          method:'POST',
+          body:JSON.stringify(payload)
+        }
+      );
+
+    if(!respuesta.ok){
+      throw new Error(
+        'HTTP ' +
+        respuesta.status
+      );
+    }
+
+    const json =
+      await respuesta.json();
+
+    if(!json.ok){
+      throw new Error(
+        json.error ||
+        'No se pudo guardar.'
+      );
+    }
+
+    const modalidad =
+      payload.modalidad;
+
+    const claveEstado =
+      INSCRIPCION_ACTUAL +
+      '|' +
+      modalidad;
+
+    ESTADO_MODALIDADES[
+      claveEstado
+    ] = {
+      participantes:
+        payload.participantes,
+      minutos:
+        payload.minutos,
+      segundos:
+        payload.segundos,
+      centesimas:
+        payload.centesimas,
+      observacion:
+        payload.observacion,
+      penalizaciones:
+        payload.penalizaciones,
+      estado:
+        cerrar
+          ? 'FINALIZADO'
+          : 'BORRADOR'
+    };
+
+    if(
+      !DATOS_INSCRIPCION.resultados
+    ){
+      DATOS_INSCRIPCION.resultados = {};
+    }
+
+    DATOS_INSCRIPCION.resultados[
+      modalidad
+    ] = Object.assign(
+      {},
+      json.resultado || {},
+      {
+        participantes:
+          payload.participantes,
+        minutos:
+          payload.minutos,
+        segundos:
+          payload.segundos,
+        centesimas:
+          payload.centesimas,
+        observacion:
+          payload.observacion,
+        penalizaciones:
+          payload.penalizaciones,
+        estado:
+          cerrar
+            ? 'FINALIZADO'
+            : 'BORRADOR'
+      }
+    );
+
+    setEstadoTexto(
+      cerrar
+        ? 'FINALIZADO'
+        : 'BORRADOR'
+    );
+
+    if(cerrar){
+      bloquearFiscalizacion();
+    }
+
+    mostrarToast(
+      cerrar
+        ? 'Fiscalización cerrada correctamente.'
+        : 'Borrador guardado correctamente.'
+    );
+
+  } catch(error) {
+    console.error(error);
+
+    alert(
+      'No se pudo guardar la fiscalización.\n\n' +
+      (
+        error && error.message
+          ? error.message
+          : error
+      )
+    );
+
+  } finally {
+    if(!cerrar){
+      boton.disabled = false;
+      boton.textContent =
+        textoOriginal;
+    }
+  }
+}
+
+function bloquearFiscalizacion(){
+  document.body.classList.add(
+    'fiscalizacion-cerrada'
+  );
+
+  const btnCerrar =
+    document.getElementById(
+      'btnCerrar'
+    );
+
+  btnCerrar.disabled = true;
+  btnCerrar.textContent =
+    'FISCALIZACIÓN CERRADA';
+
+  document.getElementById(
+    'btnBorrador'
+  ).disabled = true;
+}
+
+
+/* =========================================================
+ * RANKING INTERNO
+ * ========================================================= */
+
+async function cargarRanking(){
+  try {
+    const respuesta =
+      await fetch(
+        SCRIPT_URL +
+        '?accion=ranking&_=' +
+        Date.now(),
+        {cache:'no-store'}
+      );
+
+    const json =
+      await respuesta.json();
+
+    if(!json.ok) return;
+
+    const selector =
+      document.getElementById(
+        'rankingModalidad'
+      );
+
+    const valorAnterior =
+      selector.value;
+
+    selector.innerHTML = '';
+
+    (json.modalidades || [])
+      .forEach(modalidad=>{
+        const op =
+          document.createElement(
+            'option'
+          );
+
+        op.value = modalidad;
+
+        op.textContent =
+          modalidad
+            .toLowerCase()
+            .replace(
+              /\b\w/g,
+              m=>m.toUpperCase()
+            );
+
+        selector.appendChild(op);
+      });
+
+    if(
+      valorAnterior &&
+      Array.from(
+        selector.options
+      ).some(
+        o=>o.value === valorAnterior
+      )
+    ){
+      selector.value =
+        valorAnterior;
+    }
+
+    renderRankingDesdeDatos(
+      json.resultados || []
+    );
+
+  } catch(error) {
+    console.warn(
+      'Ranking no disponible:',
+      error
+    );
+  }
+}
+
+async function renderRankingSeleccionado(){
+  const modalidad =
+    document.getElementById(
+      'rankingModalidad'
+    ).value;
+
+  if(!modalidad){
+    document.getElementById(
+      'rankingContenedor'
+    ).innerHTML =
+      '<div class="ranking-vacio">Todavía no hay resultados finalizados.</div>';
+    return;
+  }
+
+  try {
+    const respuesta =
+      await fetch(
+        SCRIPT_URL +
+        '?accion=ranking&modalidad=' +
+        encodeURIComponent(
+          modalidad
+        ) +
+        '&_=' +
+        Date.now(),
+        {cache:'no-store'}
+      );
+
+    const json =
+      await respuesta.json();
+
+    if(json.ok){
+      renderRankingDesdeDatos(
+        json.resultados || []
+      );
+    }
+
+  } catch(error) {
+    console.warn(error);
+  }
+}
+
+function renderRankingDesdeDatos(
+  resultados
+){
+  const cont =
+    document.getElementById(
+      'rankingContenedor'
+    );
+
+  const modalidad =
+    document.getElementById(
+      'rankingModalidad'
+    ).value;
+
+  const ranking =
+    (resultados || [])
+      .filter(
+        r=>!modalidad ||
+           r.modalidad === modalidad
+      );
 
   if(!ranking.length){
     cont.innerHTML = `
       <div class="ranking-vacio">
-        Todavía no hay tiempos cargados para esta modalidad.
+        Todavía no hay resultados finalizados
+        para esta modalidad.
       </div>
     `;
     return;
   }
-
-  const filas = ranking.map((r,i)=>`
-    <tr class="${i===0?'ranking-primero':''}">
-      <td class="ranking-pos">${i+1}°</td>
-      <td><strong>${escaparHTML(r.id)}</strong></td>
-      <td>${escaparHTML(r.cuerpo)}</td>
-      <td>${formatoTiempo(r.base)}</td>
-      <td>${r.penalizacion>0 ? '+'+formatoTiempo(r.penalizacion) : '—'}</td>
-      <td class="ranking-tiempo">${formatoTiempo(r.final)}</td>
-      <td><span class="badge-ranking">${escaparHTML(r.estado)}</span></td>
-    </tr>
-  `).join('');
 
   cont.innerHTML = `
     <table class="ranking-table">
@@ -1117,255 +1966,184 @@ function renderRanking(){
           <th>Tiempo obtenido</th>
           <th>Penalización</th>
           <th>Tiempo final</th>
-          <th>Estado</th>
         </tr>
       </thead>
-      <tbody>${filas}</tbody>
+
+      <tbody>
+        ${ranking.map(r=>`
+          <tr class="${Number(r.posicion)===1?'ranking-primero':''}">
+            <td class="ranking-pos">
+              ${r.posicion}°
+            </td>
+
+            <td>
+              <strong>
+                ${escaparHTML(r.inscripcion)}
+              </strong>
+            </td>
+
+            <td>
+              ${escaparHTML(r.cuerpo)}
+            </td>
+
+            <td>
+              ${escaparHTML(r.tiempoBase)}
+            </td>
+
+            <td>
+              ${Number(r.penalizacionSegundos)>0
+                ? '+' + formatoTiempo(r.penalizacionSegundos)
+                : '—'
+              }
+            </td>
+
+            <td class="ranking-tiempo">
+              ${escaparHTML(r.tiempoFinal)}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
     </table>
   `;
 }
 
-function baseSegundos(){
-  const m = Number(document.getElementById('minutos').value) || 0;
-  const s = Number(document.getElementById('segundos').value) || 0;
-  const c = Number(document.getElementById('centesimas').value) || 0;
-  return m*60+s+c/100;
-}
 
-function formatoTiempo(segundos){
-  segundos=Math.max(0,segundos);
-  const min=Math.floor(segundos/60);
-  const seg=Math.floor(segundos%60);
-  const cen=Math.round((segundos-Math.floor(segundos))*100);
-  return String(min).padStart(2,'0')+':' +
-         String(seg).padStart(2,'0')+'.' +
-         String(cen).padStart(2,'0');
-}
+/* =========================================================
+ * EVENTOS
+ * ========================================================= */
 
-function recalcular(){
-  let totalPenalizacion=0;
-  let reincidencias=0;
-
-  document.querySelectorAll('.pen-row').forEach(row=>{
-    const segundos=Number(row.querySelector('.pen-seg').value)||0;
-    const reincidente=row.querySelector('.pen-reinc').checked;
-
-    /*
-      En este prototipo:
-      penalización normal = suma los segundos indicados.
-      reincidencia = vuelve a sumar el mismo valor una vez más.
-      Ejemplo: 10 s + reincidencia => 20 s.
-    */
-    totalPenalizacion += segundos;
-
-    if(reincidente){
-      totalPenalizacion += segundos;
-      reincidencias++;
-    }
-  });
-
-  const base=baseSegundos();
-
-  document.getElementById('tiempoBase').textContent=formatoTiempo(base);
-  document.getElementById('penalizacionTotal').textContent='+'+formatoTiempo(totalPenalizacion).slice(0,5);
-  document.getElementById('reincidencias').textContent=reincidencias;
-  document.getElementById('tiempoFinal').textContent=formatoTiempo(base+totalPenalizacion);
-
-  if(document.getElementById('rankingContenedor')){
-    renderRanking();
-  }
-}
-
-function agregarPenalizacion(indice=0, datos=null){
-  const row=document.createElement('div');
-  row.className='pen-row';
-
-  const opciones=TIPOS_PENALIZACION.map((p,i)=>
-    `<option value="${i}">${p.nombre}</option>`
-  ).join('');
-
-  row.innerHTML=`
-    <div class="pen-grid">
-      <div>
-        <label class="label">Penalización</label>
-        <select class="pen-tipo">${opciones}</select>
-      </div>
-
-      <div>
-        <label class="label">Tiempo a sumar (seg.)</label>
-        <input class="pen-seg" type="number" min="0" value="${TIPOS_PENALIZACION[indice].segundos}">
-      </div>
-
-      <div>
-        <label class="label">Reincidencia</label>
-        <label class="checkline">
-          <input class="pen-reinc" type="checkbox">
-          Sumar nuevamente
-        </label>
-      </div>
-
-      <button class="btn btn-danger pen-del" type="button">QUITAR</button>
-    </div>
-
-    <div style="margin-top:10px">
-      <label class="label">Motivo / observación</label>
-      <input class="pen-motivo" type="text" placeholder="Detalle de la penalización">
-    </div>
-  `;
-
-  row.querySelector('.pen-tipo').value=indice;
-
-  if(datos){
-    row.querySelector('.pen-seg').value = Number(datos.segundos)||0;
-    row.querySelector('.pen-reinc').checked = Boolean(datos.reincidencia);
-    row.querySelector('.pen-motivo').value = datos.motivo || '';
-  }
-
-  row.querySelector('.pen-tipo').addEventListener('change',e=>{
-    const i=Number(e.target.value);
-    row.querySelector('.pen-seg').value=TIPOS_PENALIZACION[i].segundos;
-    recalcular();
-  });
-
-  row.querySelector('.pen-seg').addEventListener('input',recalcular);
-  row.querySelector('.pen-reinc').addEventListener('change',recalcular);
-
-  row.querySelector('.pen-del').addEventListener('click',()=>{
-    row.remove();
-    recalcular();
-  });
-
-  document.getElementById('penList').appendChild(row);
-  recalcular();
-}
-
-document.getElementById('btnAgregar').addEventListener('click',()=>agregarPenalizacion());
-
-['minutos','segundos','centesimas'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',recalcular);
-});
-
-document.getElementById('rankingModalidad').addEventListener('change',renderRanking);
-
-document.getElementById('btnCargarInscripcion').addEventListener('click',()=>{
-  cargarInscripcion(document.getElementById('busqueda').value);
-});
-
-document.getElementById('busqueda').addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    e.preventDefault();
-    cargarInscripcion(e.target.value);
-  }
-});
-
-document.getElementById('modalidadFiscalizacion').addEventListener('change',e=>{
-  const dato = INSCRIPCIONES[INSCRIPCION_ACTUAL];
-  if(!dato) return;
-
-  dato.modalidadActual = e.target.value;
-  document.getElementById('equipoCopa').textContent =
-    INSCRIPCION_ACTUAL + ' · ' + dato.modalidadActual;
-
-  construirSelectorRanking();
-  document.getElementById('rankingModalidad').value = dato.modalidadActual;
-  renderRanking();
-});
-
-
-function datosParticipantesActuales(){
-  return Array.from(document.querySelectorAll('.part-editable')).map((row,idx)=>({
-    numero: idx+1,
-    nombre: row.querySelector('.part-nombre').value.trim(),
-    sexo: row.querySelector('.part-sexo').value,
-    edad: Number(row.querySelector('.part-edad').value)||0
-  }));
-}
-
-function validarAntesDeCerrar(){
-  const modalidad = document.getElementById('modalidadFiscalizacion').value;
-  const participantes = datosParticipantesActuales();
-
-  if(!modalidad){
-    alert('Debés seleccionar la modalidad que se está fiscalizando.');
-    return false;
-  }
-
-  const incompleto = participantes.find(p=>!p.nombre || !p.sexo || !p.edad);
-  if(incompleto){
-    alert('Revisá los datos del participante ' + incompleto.numero + '. Hay información incompleta.');
-    return false;
-  }
-
-  return true;
-}
-
-function bloquearFiscalizacion(){
-  document.body.classList.add('fiscalizacion-cerrada');
-  document.getElementById('btnCerrar').disabled = true;
-  document.getElementById('btnCerrar').textContent = 'FISCALIZACIÓN CERRADA';
-  document.getElementById('btnBorrador').disabled = true;
-}
-
-
-function mostrarToast(texto){
-  const t=document.getElementById('toast');
-  t.textContent=texto;
-  t.classList.add('visible');
-  setTimeout(()=>t.classList.remove('visible'),2200);
-}
-
-document.getElementById('btnBorrador').addEventListener('click',()=>{
-  guardarEstadoFiscalizacionActual();
-
-  const modalidad = document.getElementById('modalidadFiscalizacion').value;
-  const participantes = datosParticipantesActuales();
-
-  renderRanking();
-
-  mostrarToast(
-    'Borrador guardado: ' +
-    INSCRIPCION_ACTUAL +
-    ' · ' +
-    modalidad +
-    ' · ' +
-    participantes.length +
-    ' participante(s).'
+document
+  .getElementById(
+    'btnCargarInscripcion'
+  )
+  .addEventListener(
+    'click',
+    ()=>cargarInscripcion(
+      document.getElementById(
+        'busqueda'
+      ).value
+    )
   );
+
+document
+  .getElementById('busqueda')
+  .addEventListener(
+    'keydown',
+    e=>{
+      if(e.key === 'Enter'){
+        e.preventDefault();
+
+        cargarInscripcion(
+          e.target.value
+        );
+      }
+    }
+  );
+
+document
+  .getElementById(
+    'modalidadFiscalizacion'
+  )
+  .addEventListener(
+    'change',
+    e=>{
+      guardarEstadoPantallaModalidad();
+      mostrarModalidad(
+        e.target.value
+      );
+    }
+  );
+
+document
+  .getElementById(
+    'btnAgregar'
+  )
+  .addEventListener(
+    'click',
+    ()=>agregarPenalizacion()
+  );
+
+[
+  'minutos',
+  'segundos',
+  'centesimas'
+].forEach(id=>{
+  document
+    .getElementById(id)
+    .addEventListener(
+      'input',
+      recalcular
+    );
 });
 
-document.getElementById('btnCerrar').addEventListener('click',()=>{
-  if(!validarAntesDeCerrar()) return;
+document
+  .getElementById(
+    'btnBorrador'
+  )
+  .addEventListener(
+    'click',
+    ()=>enviarFiscalizacion(false)
+  );
 
-  const modalidad = document.getElementById('modalidadFiscalizacion').value;
-  const participantes = datosParticipantesActuales();
+document
+  .getElementById(
+    'btnCerrar'
+  )
+  .addEventListener(
+    'click',
+    ()=>enviarFiscalizacion(true)
+  );
 
-  const resumen =
-    'Modalidad: ' + modalidad + '\n' +
-    'Participantes:\n' +
-    participantes.map(p=>'• ' + p.nombre + ' — ' + p.sexo + ' — ' + p.edad + ' años').join('\n') +
-    '\n\nTiempo final: ' + document.getElementById('tiempoFinal').textContent +
-    '\n\n¿Confirmás el cierre definitivo de esta fiscalización?';
+document
+  .getElementById(
+    'rankingModalidad'
+  )
+  .addEventListener(
+    'change',
+    renderRankingSeleccionado
+  );
 
-  if(confirm(resumen)){
-    guardarEstadoFiscalizacionActual();
 
-    const dato = INSCRIPCIONES[INSCRIPCION_ACTUAL];
-    dato.estado = 'Finalizado';
-    dato.historial.push({
-      hora:new Date().toLocaleTimeString('es-UY',{hour:'2-digit',minute:'2-digit'}),
-      texto:'Fiscalización cerrada.'
-    });
+/* =========================================================
+ * ESTADO INICIAL
+ * ========================================================= */
 
-    bloquearFiscalizacion();
-    renderRanking();
-    mostrarToast('Fiscalización cerrada: ' + INSCRIPCION_ACTUAL);
-  }
-});
+document.getElementById(
+  'listaParticipantes'
+).innerHTML = `
+  <div style="
+    padding:18px;
+    text-align:center;
+    color:var(--humo)
+  ">
+    Ingrese una inscripción COPA-XXXX
+    para comenzar.
+  </div>
+`;
 
-construirDatalistInscripciones();
-construirSelectorRanking();
-cargarInscripcion('COPA-0049');
-renderRanking();
+document.getElementById(
+  'modalidadFiscalizacion'
+).innerHTML =
+  '<option value="">—</option>';
+
+document.getElementById(
+  'penList'
+).innerHTML = '';
+
+document.getElementById(
+  'minutos'
+).value = 0;
+
+document.getElementById(
+  'segundos'
+).value = 0;
+
+document.getElementById(
+  'centesimas'
+).value = 0;
+
+recalcular();
+cargarRanking();
 </script>
 </body>
 </html>
