@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiscalización — Copa Integración DNB 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --carbon:#16110E;
+  --carbon-2:#201914;
+  --rojo:#C8272D;
+  --rojo-osc:#8E1B20;
+  --dorado:#D4A94E;
+  --dorado-suave:#E6C77E;
+  --crema:#F3EADB;
+  --humo:#9A8D7E;
+  --linea:rgba(212,169,78,.25);
+  --ok:#4CAF7D;
+  --err:#E05252;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--carbon);
+  color:var(--crema);
+  font-family:'Barlow',sans-serif;
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at 50% -10%,rgba(200,39,45,.18),transparent 55%),
+    radial-gradient(ellipse at 90% 100%,rgba(212,169,78,.06),transparent 50%);
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 70px}
+
+header{
+  position:relative;
+  padding:42px 0 26px;
+  text-align:center;
+  overflow:hidden;
+}
+.franja{position:absolute;inset:0;pointer-events:none}
+.franja::before,.franja::after{
+  content:"";
+  position:absolute;
+  left:-20%;right:-20%;
+  transform:rotate(-2.5deg);
+}
+.franja::before{top:20px;height:10px;background:var(--rojo)}
+.franja::after{top:34px;height:3px;background:var(--dorado)}
+.kicker{
+  font-family:'Staatliches',sans-serif;
+  letter-spacing:.28em;
+  color:var(--dorado);
+  font-size:.82rem;
+  margin-bottom:8px;
+}
+h1{
+  font-family:'Staatliches',sans-serif;
+  font-size:clamp(2.2rem,6vw,4.2rem);
+  font-weight:400;
+  letter-spacing:.03em;
+  line-height:.95;
+}
+h1 span{
+  display:block;
+  margin-top:8px;
+  color:var(--rojo);
+  font-size:.42em;
+  letter-spacing:.18em;
+}
+.subhead{
+  max-width:760px;
+  margin:16px auto 0;
+  color:var(--humo);
+  line-height:1.5;
+  font-size:.94rem;
+}
+
+.topbar{
+  display:grid;
+  grid-template-columns:1.4fr .7fr .7fr;
+  gap:12px;
+  margin:18px 0 20px;
+}
+.card{
+  background:var(--carbon-2);
+  border:1px solid var(--linea);
+  border-top:4px solid var(--rojo);
+}
+.panel{padding:22px}
+.label{
+  display:block;
+  margin-bottom:7px;
+  color:var(--humo);
+  font-size:.74rem;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+input[type=text],input[type=number],select,textarea{
+  width:100%;
+  padding:12px 13px;
+  background:var(--carbon);
+  border:1px solid var(--linea);
+  color:var(--crema);
+  outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--dorado)}
+textarea{min-height:90px;resize:vertical}
+.search-wrap{position:relative}
+.search-wrap input{padding-left:42px}
+.search-icon{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--dorado);
+}
+.stat{
+  min-height:94px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.stat .num{
+  font-family:'Staatliches',sans-serif;
+  font-size:2rem;
+  color:var(--dorado-suave);
+}
+.stat .txt{
+  color:var(--humo);
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.grid-main{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:18px;
+  align-items:start;
+}
+.section-title{
+  font-family:'Staatliches',sans-serif;
+  color:var(--dorado);
+  font-size:1.2rem;
+  letter-spacing:.12em;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
+.section-title::after{
+  content:"";
+  height:1px;
+  background:var(--linea);
+  flex:1;
+}
+.equipo-head{
+  background:linear-gradient(160deg,var(--rojo-osc),var(--rojo));
+  border:1px solid var(--dorado);
+  padding:18px;
+  text-align:center;
+  margin-bottom:18px;
+}
+.equipo-head .cuerpo{
+  font-family:'Staatliches',sans-serif;
+  font-size:1.55rem;
+  letter-spacing:.07em;
+}
+.equipo-head .copa{
+  margin-top:4px;
+  color:var(--dorado-suave);
+  font-family:'Staatliches',sans-serif;
+  letter-spacing:.12em;
+}
+.meta{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:18px;
+}
+.meta-box{
+  background:var(--carbon);
+  border:1px solid var(--linea);
+  padding:12px;
+}
+.meta-box strong{
+  display:block;
+  color:var(--dorado-suave);
+  font-family:'Staatliches',sans-serif;
+  font-size:.82rem;
+  letter-spacing:.08em;
+  margin-bottom:4px;
+}
+.meta-box span{font-size:.9rem}
+.participantes{
+  border:1px solid var(--linea);
+  background:var(--carbon);
+}
+.part-row{
+  display:grid;
+  grid-template-columns:46px 1.4fr .9fr .6fr;
+  gap:10px;
+  align-items:center;
+  padding:11px 12px;
+  border-bottom:1px solid var(--linea);
+}
+.part-row:last-child{border-bottom:none}
+.part-row.head{
+  background:rgba(212,169,78,.11);
+  color:var(--dorado-suave);
+  font-size:.75rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.dorsal{
+  width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--dorado);
+  color:var(--carbon);
+  font-family:'Staatliches',sans-serif;
+}
+.estado{
+  display:inline-flex;
+  padding:5px 8px;
+  border:1px solid rgba(76,175,125,.35);
+  color:#9ce9b9;
+  background:rgba(76,175,125,.08);
+  font-size:.78rem;
+}
+.result-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+.pen-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.pen-row{
+  border:1px solid var(--linea);
+  background:var(--carbon);
+  padding:12px;
+}
+.pen-grid{
+  display:grid;
+  grid-template-columns:1.3fr .7fr .7fr auto;
+  gap:9px;
+  align-items:end;
+}
+.checkline{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--humo);
+  font-size:.82rem;
+}
+.checkline input{accent-color:var(--dorado)}
+.btn{
+  border:none;
+  padding:12px 16px;
+  font-family:'Staatliches',sans-serif;
+  letter-spacing:.08em;
+  font-size:1rem;
+}
+.btn-pri{
+  background:linear-gradient(160deg,var(--rojo),var(--rojo-osc));
+  color:var(--crema);
+  border-bottom:3px solid var(--dorado);
+}
+.btn-sec{
+  background:var(--carbon);
+  color:var(--dorado);
+  border:1px solid var(--linea);
+}
+.btn-ok{
+  background:linear-gradient(160deg,#176b3a,#249a55);
+  color:#fff;
+  border-bottom:3px solid #8ff0b2;
+}
+.btn-danger{
+  background:#5d1d20;
+  color:#fff;
+  border:1px solid #9f4044;
+}
+.btn-add{
+  width:100%;
+  margin-top:10px;
+}
+.result-final{
+  margin-top:18px;
+  background:linear-gradient(160deg,rgba(212,169,78,.13),rgba(200,39,45,.08));
+  border:1px solid var(--dorado);
+  padding:18px;
+}
+.result-final-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.result-box{
+  background:rgba(22,17,14,.65);
+  border:1px solid var(--linea);
+  padding:12px;
+  text-align:center;
+}
+.result-box .v{
+  display:block;
+  color:var(--dorado-suave);
+  font-family:'Staatliches',sans-serif;
+  font-size:1.55rem;
+}
+.result-box .t{
+  color:var(--humo);
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.result-box.final{
+  border-color:var(--dorado);
+  background:rgba(212,169,78,.09);
+}
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:18px;
+}
+.historial{
+  margin-top:18px;
+  border-top:1px solid var(--linea);
+  padding-top:16px;
+}
+.hist-item{
+  padding:10px 0;
+  border-bottom:1px solid rgba(212,169,78,.12);
+  font-size:.82rem;
+}
+.hist-item strong{color:var(--dorado-suave)}
+.hist-item span{color:var(--humo)}
+.toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  background:#1c3f2b;
+  border:1px solid var(--ok);
+  color:#bff2cf;
+  padding:12px 16px;
+  display:none;
+}
+.toast.visible{display:block}
+
+.select-meta{
+  width:100%;
+  margin-top:4px;
+  padding:9px 10px;
+  background:var(--carbon-2);
+  border:1px solid var(--linea);
+  color:var(--crema);
+  font-size:.86rem;
+}
+.meta-ayuda{
+  display:block;
+  margin-top:6px;
+  color:var(--humo);
+  font-size:.68rem;
+  line-height:1.35;
+}
+.part-editable input,
+.part-editable select{
+  width:100%;
+  padding:8px 9px;
+  background:rgba(32,25,20,.85);
+  border:1px solid rgba(212,169,78,.18);
+  color:var(--crema);
+  font-size:.88rem;
+}
+.part-editable input:focus,
+.part-editable select:focus{
+  border-color:var(--dorado);
+  outline:none;
+}
+.edicion-aviso{
+  margin-top:14px;
+  padding:12px 14px;
+  background:rgba(212,169,78,.07);
+  border-left:4px solid var(--dorado);
+  font-size:.8rem;
+  line-height:1.45;
+}
+.edicion-aviso strong{
+  display:block;
+  margin-bottom:3px;
+  color:var(--dorado-suave);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.edicion-aviso span{color:var(--humo)}
+body.fiscalizacion-cerrada .part-editable input,
+body.fiscalizacion-cerrada .part-editable select,
+body.fiscalizacion-cerrada #modalidadFiscalizacion,
+body.fiscalizacion-cerrada #minutos,
+body.fiscalizacion-cerrada #segundos,
+body.fiscalizacion-cerrada #centesimas,
+body.fiscalizacion-cerrada textarea,
+body.fiscalizacion-cerrada .pen-row input,
+body.fiscalizacion-cerrada .pen-row select,
+body.fiscalizacion-cerrada .pen-del,
+body.fiscalizacion-cerrada #btnAgregar{
+  pointer-events:none;
+  opacity:.62;
+}
+
+
+.ranking-card{
+  margin-top:20px;
+  background:var(--carbon-2);
+  border:1px solid var(--linea);
+  border-top:4px solid var(--dorado);
+  padding:22px;
+}
+.ranking-toolbar{
+  display:grid;
+  grid-template-columns:1fr 280px;
+  gap:14px;
+  align-items:end;
+  margin-bottom:16px;
+}
+.ranking-table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--carbon);
+  border:1px solid var(--linea);
+}
+.ranking-table th{
+  background:var(--rojo);
+  color:#fff;
+  padding:11px 10px;
+  font-size:.75rem;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  text-align:center;
+}
+.ranking-table td{
+  padding:11px 10px;
+  border-bottom:1px solid var(--linea);
+  text-align:center;
+  font-size:.86rem;
+}
+.ranking-table tr:last-child td{border-bottom:none}
+.ranking-table tbody tr:nth-child(even){background:rgba(212,169,78,.045)}
+.ranking-pos{
+  font-family:'Staatliches',sans-serif;
+  color:var(--dorado-suave);
+  font-size:1.2rem;
+}
+.ranking-tiempo{
+  font-family:'Staatliches',sans-serif;
+  font-size:1.1rem;
+  color:var(--dorado-suave);
+}
+.ranking-primero td{
+  background:rgba(212,169,78,.11);
+  font-weight:600;
+}
+.ranking-vacio{
+  padding:18px;
+  text-align:center;
+  color:var(--humo);
+  border:1px dashed var(--linea);
+}
+.badge-ranking{
+  display:inline-block;
+  padding:3px 7px;
+  font-size:.7rem;
+  border:1px solid var(--linea);
+  color:var(--humo);
+}
+
+@media(max-width:900px){
+  .grid-main{grid-template-columns:1fr}
+  .topbar{grid-template-columns:1fr 1fr}
+  .topbar .card:first-child{grid-column:1/-1}
+}
+@media(max-width:640px){
+  .ranking-toolbar{grid-template-columns:1fr}
+  .ranking-card{overflow-x:auto}
+  .ranking-table{min-width:760px}
+
+  .topbar{grid-template-columns:1fr}
+  .meta{grid-template-columns:1fr}
+  .part-row{grid-template-columns:40px 1fr}
+  .part-row>:nth-child(3),.part-row>:nth-child(4){display:none}
+  .result-grid{grid-template-columns:1fr}
+  .result-final-grid{grid-template-columns:1fr 1fr}
+  .pen-grid{grid-template-columns:1fr}
+  .actions{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="franja" aria-hidden="true"></div>
+  <div class="kicker">DIRECCIÓN NACIONAL DE BOMBEROS</div>
+  <h1>FISCALIZACIÓN<span>COPA INTEGRACIÓN DNB 2026</span></h1>
+  <p class="subhead">
+    Registro de tiempos y penalizaciones. Todas las penalizaciones suman tiempo al resultado obtenido.
+  </p>
+</header>
+
+<section class="topbar">
+  <div class="card panel">
+    <label class="label">Buscar inscripción, cuerpo o participante</label>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input id="busqueda" type="text" list="listaInscripciones" value="COPA-0049" placeholder="COPA-0049, Maldonado, participante...">
+      <datalist id="listaInscripciones"></datalist>
+      <button class="btn btn-pri" id="btnCargarInscripcion" type="button" style="margin-top:10px;width:100%">
+        CARGAR INSCRIPCIÓN
+      </button>
+    </div>
+  </div>
+  <div class="card stat">
+    <span class="num">18</span>
+    <span class="txt">Pendientes</span>
+  </div>
+  <div class="card stat">
+    <span class="num">42</span>
+    <span class="txt">Finalizados</span>
+  </div>
+</section>
+
+<div class="grid-main">
+
+<section class="card panel">
+  <div class="section-title">INSCRIPCIÓN SELECCIONADA</div>
+
+  <div class="equipo-head">
+    <div class="cuerpo" id="equipoCuerpo">BOMBEROS DE MALDONADO</div>
+    <div class="copa" id="equipoCopa">COPA-0049 · GRUPAL MIXTA</div>
+  </div>
+
+  <div class="meta">
+    <div class="meta-box">
+      <strong>CAPITÁN</strong>
+      <span id="equipoCapitan">José Ferreira</span>
+    </div>
+    <div class="meta-box">
+      <strong>MODALIDAD EN FISCALIZACIÓN</strong>
+      <select id="modalidadFiscalizacion" class="select-meta"></select>
+      <small class="meta-ayuda">Seleccioná la modalidad exacta antes de cerrar.</small>
+    </div>
+    <div class="meta-box">
+      <strong>ESTADO</strong>
+      <span class="estado">● En fiscalización</span>
+    </div>
+  </div>
+
+  <div class="section-title">PARTICIPANTES</div>
+
+  <div class="participantes">
+    <div class="part-row head"><div>#</div><div>Nombre</div><div>Sexo</div><div>Edad</div></div>
+    <div id="listaParticipantes"></div>
+  </div>
+
+  <div class="edicion-aviso">
+    <strong>Verificación previa al cierre</strong>
+    <span>Los nombres, sexo, edad y modalidad pueden corregirse mientras la fiscalización esté abierta.</span>
+  </div>
+
+  <div class="historial">
+    <div class="section-title">HISTORIAL</div>
+    <div id="listaHistorial"></div>
+  </div>
+</section>
+
+<section class="card panel">
+  <div class="section-title">TIEMPO OBTENIDO</div>
+
+  <div class="result-grid">
+    <div>
+      <label class="label">Minutos</label>
+      <input id="minutos" type="number" min="0" value="2">
+    </div>
+    <div>
+      <label class="label">Segundos</label>
+      <input id="segundos" type="number" min="0" max="59" value="45">
+    </div>
+    <div>
+      <label class="label">Centésimas</label>
+      <input id="centesimas" type="number" min="0" max="99" value="38">
+    </div>
+  </div>
+
+  <div style="margin-top:16px">
+    <label class="label">Observación general</label>
+    <textarea placeholder="Observaciones del fiscal..."></textarea>
+  </div>
+
+  <div class="section-title" style="margin-top:22px">PENALIZACIONES — SUMAN TIEMPO</div>
+
+  <div id="penList" class="pen-list"></div>
+
+  <button class="btn btn-sec btn-add" id="btnAgregar" type="button">
+    + AGREGAR PENALIZACIÓN
+  </button>
+
+  <div class="result-final">
+    <div class="section-title">RESULTADO FINAL</div>
+
+    <div class="result-final-grid">
+      <div class="result-box">
+        <span class="v" id="tiempoBase">02:45.38</span>
+        <span class="t">Tiempo obtenido</span>
+      </div>
+
+      <div class="result-box">
+        <span class="v" id="penalizacionTotal">+00:00</span>
+        <span class="t">Tiempo penalizado</span>
+      </div>
+
+      <div class="result-box">
+        <span class="v" id="reincidencias">0</span>
+        <span class="t">Reincidencias</span>
+      </div>
+
+      <div class="result-box final">
+        <span class="v" id="tiempoFinal">02:45.38</span>
+        <span class="t">Tiempo final</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-sec" id="btnBorrador">GUARDAR BORRADOR</button>
+    <button class="btn btn-ok" id="btnCerrar">CERRAR FISCALIZACIÓN</button>
+  </div>
+</section>
+
+
+</div>
+
+<section class="ranking-card">
+  <div class="section-title">RANKING DE TIEMPOS</div>
+
+  <div class="ranking-toolbar">
+    <div>
+      <span class="label">Criterio</span>
+      <div style="color:var(--humo);font-size:.84rem;line-height:1.45">
+        Orden automático por <strong style="color:var(--dorado-suave)">menor tiempo final</strong>.
+        El tiempo final incluye todas las penalizaciones.
+      </div>
+    </div>
+
+    <div>
+      <label class="label">Modalidad</label>
+      <select id="rankingModalidad"></select>
+    </div>
+  </div>
+
+  <div id="rankingContenedor"></div>
+</section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+const INSCRIPCIONES = {
+  'COPA-0049': {
+    cuerpo: 'BOMBEROS DE MALDONADO',
+    capitan: 'José Ferreira',
+    modalidades: ['GRUPAL MIXTA', 'GRUPAL MASCULINO'],
+    modalidadActual: 'GRUPAL MIXTA',
+    estado: 'En fiscalización',
+    participantes: [
+      {nombre:'Martín Rodríguez', sexo:'Masculino', edad:31},
+      {nombre:'Camila Pereira', sexo:'Femenino', edad:29},
+      {nombre:'Lucas Silva', sexo:'Masculino', edad:34},
+      {nombre:'Valentina Núñez', sexo:'Femenino', edad:27}
+    ],
+    fiscalizacion: {
+      minutos:2,
+      segundos:45,
+      centesimas:38,
+      observacion:'',
+      penalizaciones:[
+        {tipo:1, segundos:10, reincidencia:false, motivo:'Prueba de ejemplo'}
+      ]
+    },
+    historial:[
+      {hora:'10:14', texto:'Fiscalización iniciada.'}
+    ]
+  },
+
+  'COPA-0059': {
+    cuerpo: 'BOMBEROS DE CANELONES',
+    capitan: 'José Ferreira',
+    modalidades: ['GRUPAL FEMENINO'],
+    modalidadActual: 'GRUPAL FEMENINO',
+    estado: 'Pendiente',
+    participantes: [
+      {nombre:'Andrea Silva', sexo:'Femenino', edad:30},
+      {nombre:'Lucía Rodríguez', sexo:'Femenino', edad:28},
+      {nombre:'Natalia Pérez', sexo:'Femenino', edad:35},
+      {nombre:'Carolina Núñez', sexo:'Femenino', edad:26}
+    ],
+    fiscalizacion: {
+      minutos:0,
+      segundos:0,
+      centesimas:0,
+      observacion:'',
+      penalizaciones:[]
+    },
+    historial:[
+      {hora:'09:55', texto:'Inscripción disponible para fiscalización.'}
+    ]
+  },
+
+  'COPA-0067': {
+    cuerpo: 'BOMBEROS DE COLONIA',
+    capitan: 'NO REQUIERE CAPITÁN',
+    modalidades: ['INDIVIDUAL MASCULINO'],
+    modalidadActual: 'INDIVIDUAL MASCULINO',
+    estado: 'Pendiente',
+    participantes: [
+      {nombre:'Federico Gómez', sexo:'Masculino', edad:32}
+    ],
+    fiscalizacion: {
+      minutos:0,
+      segundos:0,
+      centesimas:0,
+      observacion:'',
+      penalizaciones:[]
+    },
+    historial:[
+      {hora:'08:40', texto:'Inscripción individual cargada.'}
+    ]
+  }
+};
+
+let INSCRIPCION_ACTUAL = 'COPA-0049';
+
+function normalizarBusquedaInscripcion(valor){
+  return String(valor || '').trim().toUpperCase();
+}
+
+function construirDatalistInscripciones(){
+  const lista = document.getElementById('listaInscripciones');
+  lista.innerHTML = '';
+
+  Object.keys(INSCRIPCIONES).forEach(id=>{
+    const dato = INSCRIPCIONES[id];
+    const option = document.createElement('option');
+    option.value = id;
+    option.label = id + ' — ' + dato.cuerpo + ' — ' + dato.modalidadActual;
+    lista.appendChild(option);
+  });
+}
+
+function guardarEstadoFiscalizacionActual(){
+  const dato = INSCRIPCIONES[INSCRIPCION_ACTUAL];
+  if(!dato) return;
+
+  dato.modalidadActual = document.getElementById('modalidadFiscalizacion').value;
+  dato.participantes = datosParticipantesActuales();
+
+  dato.fiscalizacion.minutos = Number(document.getElementById('minutos').value)||0;
+  dato.fiscalizacion.segundos = Number(document.getElementById('segundos').value)||0;
+  dato.fiscalizacion.centesimas = Number(document.getElementById('centesimas').value)||0;
+
+  const obs = document.querySelector('textarea');
+  dato.fiscalizacion.observacion = obs ? obs.value : '';
+
+  dato.fiscalizacion.penalizaciones = Array.from(
+    document.querySelectorAll('.pen-row')
+  ).map(row=>({
+    tipo:Number(row.querySelector('.pen-tipo').value)||0,
+    segundos:Number(row.querySelector('.pen-seg').value)||0,
+    reincidencia:row.querySelector('.pen-reinc').checked,
+    motivo:row.querySelector('.pen-motivo').value.trim()
+  }));
+}
+
+function renderParticipantes(participantes){
+  const cont = document.getElementById('listaParticipantes');
+  cont.innerHTML = '';
+
+  participantes.forEach((p,idx)=>{
+    const row = document.createElement('div');
+    row.className = 'part-row part-editable';
+    row.dataset.participante = String(idx+1);
+
+    row.innerHTML = `
+      <div class="dorsal">${idx+1}</div>
+      <div>
+        <input class="part-nombre" type="text" value="${escaparHTML(p.nombre)}" aria-label="Nombre participante ${idx+1}">
+      </div>
+      <div>
+        <select class="part-sexo" aria-label="Sexo participante ${idx+1}">
+          <option ${p.sexo==='Masculino'?'selected':''}>Masculino</option>
+          <option ${p.sexo==='Femenino'?'selected':''}>Femenino</option>
+        </select>
+      </div>
+      <div>
+        <input class="part-edad" type="number" min="18" max="99" value="${Number(p.edad)||''}" aria-label="Edad participante ${idx+1}">
+      </div>
+    `;
+
+    cont.appendChild(row);
+  });
+}
+
+function escaparHTML(valor){
+  return String(valor ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+function renderModalidades(dato){
+  const select = document.getElementById('modalidadFiscalizacion');
+  select.innerHTML = '';
+
+  dato.modalidades.forEach(modalidad=>{
+    const option = document.createElement('option');
+    option.value = modalidad;
+    option.textContent = modalidad
+      .toLowerCase()
+      .replace(/\b\w/g,m=>m.toUpperCase());
+
+    if(modalidad === dato.modalidadActual){
+      option.selected = true;
+    }
+
+    select.appendChild(option);
+  });
+}
+
+function renderHistorial(historial){
+  const cont = document.getElementById('listaHistorial');
+  cont.innerHTML = '';
+
+  historial.forEach(item=>{
+    const row = document.createElement('div');
+    row.className = 'hist-item';
+    row.innerHTML = `<strong>${escaparHTML(item.hora)}</strong> <span>${escaparHTML(item.texto)}</span>`;
+    cont.appendChild(row);
+  });
+}
+
+function renderPenalizaciones(penalizaciones){
+  document.getElementById('penList').innerHTML = '';
+
+  penalizaciones.forEach(p=>{
+    agregarPenalizacion(p.tipo, p);
+  });
+
+  if(!penalizaciones.length){
+    recalcular();
+  }
+}
+
+function cargarInscripcion(id){
+  const clave = normalizarBusquedaInscripcion(id);
+  const dato = INSCRIPCIONES[clave];
+
+  if(!dato){
+    alert('No se encontró la inscripción ' + clave + ' en este prototipo.');
+    return false;
+  }
+
+  if(INSCRIPCION_ACTUAL && INSCRIPCIONES[INSCRIPCION_ACTUAL]){
+    guardarEstadoFiscalizacionActual();
+  }
+
+  INSCRIPCION_ACTUAL = clave;
+
+  document.body.classList.remove('fiscalizacion-cerrada');
+
+  const btnCerrar = document.getElementById('btnCerrar');
+  btnCerrar.disabled = false;
+  btnCerrar.textContent = 'CERRAR FISCALIZACIÓN';
+
+  const btnBorrador = document.getElementById('btnBorrador');
+  btnBorrador.disabled = false;
+
+  document.getElementById('busqueda').value = clave;
+  document.getElementById('equipoCuerpo').textContent = dato.cuerpo;
+  document.getElementById('equipoCopa').textContent =
+    clave + ' · ' + dato.modalidadActual;
+  document.getElementById('equipoCapitan').textContent = dato.capitan;
+
+  renderModalidades(dato);
+  renderParticipantes(dato.participantes);
+  renderHistorial(dato.historial);
+
+  document.getElementById('minutos').value = dato.fiscalizacion.minutos;
+  document.getElementById('segundos').value = dato.fiscalizacion.segundos;
+  document.getElementById('centesimas').value = dato.fiscalizacion.centesimas;
+
+  const obs = document.querySelector('textarea');
+  if(obs) obs.value = dato.fiscalizacion.observacion || '';
+
+  renderPenalizaciones(dato.fiscalizacion.penalizaciones || []);
+
+  construirSelectorRanking();
+
+  const selectRanking = document.getElementById('rankingModalidad');
+  if(
+    selectRanking &&
+    Array.from(selectRanking.options).some(
+      o=>o.value===dato.modalidadActual
+    )
+  ){
+    selectRanking.value = dato.modalidadActual;
+  }
+
+  recalcular();
+  renderRanking();
+
+  mostrarToast('Inscripción cargada: ' + clave);
+  return true;
+}
+
+const TIPOS_PENALIZACION = [
+  {nombre:'Error técnico', segundos:5},
+  {nombre:'Incumplimiento de recorrido', segundos:10},
+  {nombre:'Derribo / contacto indebido', segundos:10},
+  {nombre:'Falta de elemento', segundos:15},
+  {nombre:'Conducta antideportiva', segundos:20},
+  {nombre:'Otra penalización', segundos:5}
+];
+
+
+function tiempoBaseDeFiscalizacion(f){
+  if(!f) return 0;
+  return (
+    (Number(f.minutos)||0)*60 +
+    (Number(f.segundos)||0) +
+    (Number(f.centesimas)||0)/100
+  );
+}
+
+function penalizacionTotalDeFiscalizacion(f){
+  if(!f || !Array.isArray(f.penalizaciones)) return 0;
+
+  return f.penalizaciones.reduce((total,p)=>{
+    const seg = Number(p.segundos)||0;
+    return total + seg + (p.reincidencia ? seg : 0);
+  },0);
+}
+
+function tiempoFinalDeInscripcion(id){
+  const dato = INSCRIPCIONES[id];
+  if(!dato) return null;
+
+  /*
+   * Para la inscripción actualmente visible tomamos los datos
+   * en vivo, aunque todavía no se haya presionado Guardar borrador.
+   */
+  if(id === INSCRIPCION_ACTUAL){
+    const base = baseSegundos();
+
+    let penal = 0;
+    document.querySelectorAll('.pen-row').forEach(row=>{
+      const seg = Number(row.querySelector('.pen-seg').value)||0;
+      const reinc = row.querySelector('.pen-reinc').checked;
+      penal += seg + (reinc ? seg : 0);
+    });
+
+    if(base <= 0) return null;
+
+    return {
+      base:base,
+      penalizacion:penal,
+      final:base+penal
+    };
+  }
+
+  const base = tiempoBaseDeFiscalizacion(dato.fiscalizacion);
+  if(base <= 0) return null;
+
+  const penalizacion =
+    penalizacionTotalDeFiscalizacion(dato.fiscalizacion);
+
+  return {
+    base:base,
+    penalizacion:penalizacion,
+    final:base+penalizacion
+  };
+}
+
+function modalidadesDisponiblesRanking(){
+  const set = new Set();
+
+  Object.values(INSCRIPCIONES).forEach(dato=>{
+    (dato.modalidades || []).forEach(m=>set.add(m));
+  });
+
+  return Array.from(set).sort((a,b)=>a.localeCompare(b,'es'));
+}
+
+function construirSelectorRanking(){
+  const select = document.getElementById('rankingModalidad');
+  if(!select) return;
+
+  const actual = select.value;
+  select.innerHTML = '';
+
+  modalidadesDisponiblesRanking().forEach(modalidad=>{
+    const op = document.createElement('option');
+    op.value = modalidad;
+    op.textContent = modalidad
+      .toLowerCase()
+      .replace(/\b\w/g,m=>m.toUpperCase());
+    select.appendChild(op);
+  });
+
+  const modalidadActual =
+    INSCRIPCIONES[INSCRIPCION_ACTUAL]?.modalidadActual;
+
+  if(
+    actual &&
+    Array.from(select.options).some(o=>o.value===actual)
+  ){
+    select.value = actual;
+  }else if(
+    modalidadActual &&
+    Array.from(select.options).some(o=>o.value===modalidadActual)
+  ){
+    select.value = modalidadActual;
+  }
+}
+
+function obtenerRankingModalidad(modalidad){
+  const filas = [];
+
+  Object.keys(INSCRIPCIONES).forEach(id=>{
+    const dato = INSCRIPCIONES[id];
+
+    /*
+     * La inscripción participa del ranking de la modalidad
+     * que está siendo fiscalizada.
+     */
+    if(dato.modalidadActual !== modalidad) return;
+
+    const tiempos = tiempoFinalDeInscripcion(id);
+    if(!tiempos) return;
+
+    filas.push({
+      id:id,
+      cuerpo:dato.cuerpo,
+      modalidad:dato.modalidadActual,
+      estado:dato.estado || 'Pendiente',
+      base:tiempos.base,
+      penalizacion:tiempos.penalizacion,
+      final:tiempos.final
+    });
+  });
+
+  filas.sort((a,b)=>{
+    if(a.final !== b.final) return a.final-b.final;
+    return a.id.localeCompare(b.id,'es');
+  });
+
+  return filas;
+}
+
+function renderRanking(){
+  const cont = document.getElementById('rankingContenedor');
+  const select = document.getElementById('rankingModalidad');
+
+  if(!cont || !select) return;
+
+  const modalidad = select.value;
+  const ranking = obtenerRankingModalidad(modalidad);
+
+  if(!ranking.length){
+    cont.innerHTML = `
+      <div class="ranking-vacio">
+        Todavía no hay tiempos cargados para esta modalidad.
+      </div>
+    `;
+    return;
+  }
+
+  const filas = ranking.map((r,i)=>`
+    <tr class="${i===0?'ranking-primero':''}">
+      <td class="ranking-pos">${i+1}°</td>
+      <td><strong>${escaparHTML(r.id)}</strong></td>
+      <td>${escaparHTML(r.cuerpo)}</td>
+      <td>${formatoTiempo(r.base)}</td>
+      <td>${r.penalizacion>0 ? '+'+formatoTiempo(r.penalizacion) : '—'}</td>
+      <td class="ranking-tiempo">${formatoTiempo(r.final)}</td>
+      <td><span class="badge-ranking">${escaparHTML(r.estado)}</span></td>
+    </tr>
+  `).join('');
+
+  cont.innerHTML = `
+    <table class="ranking-table">
+      <thead>
+        <tr>
+          <th>Posición</th>
+          <th>Inscripción</th>
+          <th>Cuerpo / Delegación</th>
+          <th>Tiempo obtenido</th>
+          <th>Penalización</th>
+          <th>Tiempo final</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>${filas}</tbody>
+    </table>
+  `;
+}
+
+function baseSegundos(){
+  const m = Number(document.getElementById('minutos').value) || 0;
+  const s = Number(document.getElementById('segundos').value) || 0;
+  const c = Number(document.getElementById('centesimas').value) || 0;
+  return m*60+s+c/100;
+}
+
+function formatoTiempo(segundos){
+  segundos=Math.max(0,segundos);
+  const min=Math.floor(segundos/60);
+  const seg=Math.floor(segundos%60);
+  const cen=Math.round((segundos-Math.floor(segundos))*100);
+  return String(min).padStart(2,'0')+':' +
+         String(seg).padStart(2,'0')+'.' +
+         String(cen).padStart(2,'0');
+}
+
+function recalcular(){
+  let totalPenalizacion=0;
+  let reincidencias=0;
+
+  document.querySelectorAll('.pen-row').forEach(row=>{
+    const segundos=Number(row.querySelector('.pen-seg').value)||0;
+    const reincidente=row.querySelector('.pen-reinc').checked;
+
+    /*
+      En este prototipo:
+      penalización normal = suma los segundos indicados.
+      reincidencia = vuelve a sumar el mismo valor una vez más.
+      Ejemplo: 10 s + reincidencia => 20 s.
+    */
+    totalPenalizacion += segundos;
+
+    if(reincidente){
+      totalPenalizacion += segundos;
+      reincidencias++;
+    }
+  });
+
+  const base=baseSegundos();
+
+  document.getElementById('tiempoBase').textContent=formatoTiempo(base);
+  document.getElementById('penalizacionTotal').textContent='+'+formatoTiempo(totalPenalizacion).slice(0,5);
+  document.getElementById('reincidencias').textContent=reincidencias;
+  document.getElementById('tiempoFinal').textContent=formatoTiempo(base+totalPenalizacion);
+
+  if(document.getElementById('rankingContenedor')){
+    renderRanking();
+  }
+}
+
+function agregarPenalizacion(indice=0, datos=null){
+  const row=document.createElement('div');
+  row.className='pen-row';
+
+  const opciones=TIPOS_PENALIZACION.map((p,i)=>
+    `<option value="${i}">${p.nombre}</option>`
+  ).join('');
+
+  row.innerHTML=`
+    <div class="pen-grid">
+      <div>
+        <label class="label">Penalización</label>
+        <select class="pen-tipo">${opciones}</select>
+      </div>
+
+      <div>
+        <label class="label">Tiempo a sumar (seg.)</label>
+        <input class="pen-seg" type="number" min="0" value="${TIPOS_PENALIZACION[indice].segundos}">
+      </div>
+
+      <div>
+        <label class="label">Reincidencia</label>
+        <label class="checkline">
+          <input class="pen-reinc" type="checkbox">
+          Sumar nuevamente
+        </label>
+      </div>
+
+      <button class="btn btn-danger pen-del" type="button">QUITAR</button>
+    </div>
+
+    <div style="margin-top:10px">
+      <label class="label">Motivo / observación</label>
+      <input class="pen-motivo" type="text" placeholder="Detalle de la penalización">
+    </div>
+  `;
+
+  row.querySelector('.pen-tipo').value=indice;
+
+  if(datos){
+    row.querySelector('.pen-seg').value = Number(datos.segundos)||0;
+    row.querySelector('.pen-reinc').checked = Boolean(datos.reincidencia);
+    row.querySelector('.pen-motivo').value = datos.motivo || '';
+  }
+
+  row.querySelector('.pen-tipo').addEventListener('change',e=>{
+    const i=Number(e.target.value);
+    row.querySelector('.pen-seg').value=TIPOS_PENALIZACION[i].segundos;
+    recalcular();
+  });
+
+  row.querySelector('.pen-seg').addEventListener('input',recalcular);
+  row.querySelector('.pen-reinc').addEventListener('change',recalcular);
+
+  row.querySelector('.pen-del').addEventListener('click',()=>{
+    row.remove();
+    recalcular();
+  });
+
+  document.getElementById('penList').appendChild(row);
+  recalcular();
+}
+
+document.getElementById('btnAgregar').addEventListener('click',()=>agregarPenalizacion());
+
+['minutos','segundos','centesimas'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',recalcular);
+});
+
+document.getElementById('rankingModalidad').addEventListener('change',renderRanking);
+
+document.getElementById('btnCargarInscripcion').addEventListener('click',()=>{
+  cargarInscripcion(document.getElementById('busqueda').value);
+});
+
+document.getElementById('busqueda').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    e.preventDefault();
+    cargarInscripcion(e.target.value);
+  }
+});
+
+document.getElementById('modalidadFiscalizacion').addEventListener('change',e=>{
+  const dato = INSCRIPCIONES[INSCRIPCION_ACTUAL];
+  if(!dato) return;
+
+  dato.modalidadActual = e.target.value;
+  document.getElementById('equipoCopa').textContent =
+    INSCRIPCION_ACTUAL + ' · ' + dato.modalidadActual;
+
+  construirSelectorRanking();
+  document.getElementById('rankingModalidad').value = dato.modalidadActual;
+  renderRanking();
+});
+
+
+function datosParticipantesActuales(){
+  return Array.from(document.querySelectorAll('.part-editable')).map((row,idx)=>({
+    numero: idx+1,
+    nombre: row.querySelector('.part-nombre').value.trim(),
+    sexo: row.querySelector('.part-sexo').value,
+    edad: Number(row.querySelector('.part-edad').value)||0
+  }));
+}
+
+function validarAntesDeCerrar(){
+  const modalidad = document.getElementById('modalidadFiscalizacion').value;
+  const participantes = datosParticipantesActuales();
+
+  if(!modalidad){
+    alert('Debés seleccionar la modalidad que se está fiscalizando.');
+    return false;
+  }
+
+  const incompleto = participantes.find(p=>!p.nombre || !p.sexo || !p.edad);
+  if(incompleto){
+    alert('Revisá los datos del participante ' + incompleto.numero + '. Hay información incompleta.');
+    return false;
+  }
+
+  return true;
+}
+
+function bloquearFiscalizacion(){
+  document.body.classList.add('fiscalizacion-cerrada');
+  document.getElementById('btnCerrar').disabled = true;
+  document.getElementById('btnCerrar').textContent = 'FISCALIZACIÓN CERRADA';
+  document.getElementById('btnBorrador').disabled = true;
+}
+
+
+function mostrarToast(texto){
+  const t=document.getElementById('toast');
+  t.textContent=texto;
+  t.classList.add('visible');
+  setTimeout(()=>t.classList.remove('visible'),2200);
+}
+
+document.getElementById('btnBorrador').addEventListener('click',()=>{
+  guardarEstadoFiscalizacionActual();
+
+  const modalidad = document.getElementById('modalidadFiscalizacion').value;
+  const participantes = datosParticipantesActuales();
+
+  renderRanking();
+
+  mostrarToast(
+    'Borrador guardado: ' +
+    INSCRIPCION_ACTUAL +
+    ' · ' +
+    modalidad +
+    ' · ' +
+    participantes.length +
+    ' participante(s).'
+  );
+});
+
+document.getElementById('btnCerrar').addEventListener('click',()=>{
+  if(!validarAntesDeCerrar()) return;
+
+  const modalidad = document.getElementById('modalidadFiscalizacion').value;
+  const participantes = datosParticipantesActuales();
+
+  const resumen =
+    'Modalidad: ' + modalidad + '\n' +
+    'Participantes:\n' +
+    participantes.map(p=>'• ' + p.nombre + ' — ' + p.sexo + ' — ' + p.edad + ' años').join('\n') +
+    '\n\nTiempo final: ' + document.getElementById('tiempoFinal').textContent +
+    '\n\n¿Confirmás el cierre definitivo de esta fiscalización?';
+
+  if(confirm(resumen)){
+    guardarEstadoFiscalizacionActual();
+
+    const dato = INSCRIPCIONES[INSCRIPCION_ACTUAL];
+    dato.estado = 'Finalizado';
+    dato.historial.push({
+      hora:new Date().toLocaleTimeString('es-UY',{hour:'2-digit',minute:'2-digit'}),
+      texto:'Fiscalización cerrada.'
+    });
+
+    bloquearFiscalizacion();
+    renderRanking();
+    mostrarToast('Fiscalización cerrada: ' + INSCRIPCION_ACTUAL);
+  }
+});
+
+construirDatalistInscripciones();
+construirSelectorRanking();
+cargarInscripcion('COPA-0049');
+renderRanking();
+</script>
+</body>
+</html>
